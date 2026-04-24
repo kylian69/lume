@@ -40,6 +40,11 @@ import {
   MessageCircle,
   Package,
   ChevronDown,
+  Upload,
+  Trash2,
+  Instagram,
+  Facebook,
+  Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,7 +58,15 @@ type Answers = {
   objectifCustom: string;
   style: string;
   inspiration: string;
+  logoName: string;
+  logoPreview: string;
+  couleur: string;
   fonctionnalites: string[];
+  siteActuel: string;
+  googleBusiness: string;
+  instagram: string;
+  facebook: string;
+  linkedin: string;
   entreprise: string;
   email: string;
   telephone: string;
@@ -142,7 +155,9 @@ const STEPS = [
   "metier",
   "objectif",
   "style",
+  "identite",
   "fonctionnalites",
+  "contenu",
   "coordonnees",
   "loading",
 ] as const;
@@ -162,12 +177,31 @@ const EMPTY: Answers = {
   objectifCustom: "",
   style: "",
   inspiration: "",
+  logoName: "",
+  logoPreview: "",
+  couleur: "#4F46E5",
   fonctionnalites: [],
+  siteActuel: "",
+  googleBusiness: "",
+  instagram: "",
+  facebook: "",
+  linkedin: "",
   entreprise: "",
   email: "",
   telephone: "",
   message: "",
 };
+
+const COLOR_PRESETS = [
+  { hex: "#4F46E5", name: "Indigo" },
+  { hex: "#0EA5E9", name: "Azur" },
+  { hex: "#10B981", name: "Émeraude" },
+  { hex: "#F43F5E", name: "Rose" },
+  { hex: "#F59E0B", name: "Ambre" },
+  { hex: "#8B5CF6", name: "Violet" },
+  { hex: "#475569", name: "Ardoise" },
+  { hex: "#0F172A", name: "Nuit" },
+];
 
 export function Questionnaire() {
   const [stepIndex, setStepIndex] = React.useState(0);
@@ -200,7 +234,11 @@ export function Questionnaire() {
         );
       case "style":
         return !!answers.style;
+      case "identite":
+        return true;
       case "fonctionnalites":
+        return true;
+      case "contenu":
         return true;
       case "coordonnees":
         return (
@@ -240,6 +278,35 @@ export function Questionnaire() {
         ? a.fonctionnalites.filter((x) => x !== id)
         : [...a.fonctionnalites, id],
     }));
+
+  const [logoError, setLogoError] = React.useState<string | null>(null);
+
+  const handleLogoFile = (file: File | undefined | null) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setLogoError("Format non supporté. Choisissez une image.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setLogoError("Fichier trop volumineux. 5 Mo maximum.");
+      return;
+    }
+    setLogoError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAnswers((a) => ({
+        ...a,
+        logoName: file.name,
+        logoPreview: typeof reader.result === "string" ? reader.result : "",
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearLogo = () => {
+    setLogoError(null);
+    setAnswers((a) => ({ ...a, logoName: "", logoPreview: "" }));
+  };
 
   React.useEffect(() => {
     if (step !== "loading") return;
@@ -522,6 +589,172 @@ export function Questionnaire() {
                   </StepWrapper>
                 )}
 
+                {step === "identite" && (
+                  <StepWrapper
+                    title="Votre identité visuelle"
+                    subtitle="Téléversez votre logo et choisissez votre couleur principale. Entièrement optionnel — nous en proposerons une si vous n'en avez pas."
+                  >
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <div>
+                        <p className="mb-2 text-sm font-medium">Logo</p>
+
+                        {answers.logoPreview ? (
+                          <div className="relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/70 bg-muted/30 p-6">
+                            <div className="flex h-28 w-full items-center justify-center rounded-xl bg-background p-3 ring-1 ring-border/60">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={answers.logoPreview}
+                                alt="Aperçu du logo"
+                                className="max-h-full max-w-full object-contain"
+                              />
+                            </div>
+                            <p className="line-clamp-1 text-xs text-muted-foreground">
+                              {answers.logoName}
+                            </p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={clearLogo}
+                              className="gap-1.5 text-muted-foreground hover:text-foreground"
+                            >
+                              <Trash2 className="h-4 w-4" aria-hidden />
+                              Retirer
+                            </Button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="logoUpload"
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              handleLogoFile(e.dataTransfer.files?.[0]);
+                            }}
+                            className={cn(
+                              "group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/20 px-6 py-10 text-center transition-colors",
+                              "hover:border-primary/50 hover:bg-muted/40"
+                            )}
+                          >
+                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                              <Upload className="h-5 w-5" aria-hidden />
+                            </span>
+                            <span className="text-sm font-medium">
+                              Glissez votre logo ici
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ou cliquez pour parcourir · PNG, JPG, SVG · 5 Mo
+                            </span>
+                          </label>
+                        )}
+
+                        <input
+                          id="logoUpload"
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) =>
+                            handleLogoFile(e.target.files?.[0])
+                          }
+                        />
+
+                        {logoError && (
+                          <p
+                            role="alert"
+                            className="mt-2 text-xs font-medium text-red-500"
+                          >
+                            {logoError}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="mb-2 text-sm font-medium">
+                          Couleur principale
+                        </p>
+
+                        <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/20 p-4">
+                          <label
+                            htmlFor="couleurPicker"
+                            className="relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-border shadow-inner"
+                            style={{ backgroundColor: answers.couleur }}
+                            aria-label="Sélecteur de couleur"
+                          >
+                            <input
+                              id="couleurPicker"
+                              type="color"
+                              value={answers.couleur}
+                              onChange={(e) =>
+                                setAnswers((a) => ({
+                                  ...a,
+                                  couleur: e.target.value,
+                                }))
+                              }
+                              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                            />
+                          </label>
+                          <div className="flex-1">
+                            <Input
+                              aria-label="Valeur hexadécimale"
+                              value={answers.couleur.toUpperCase()}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                if (/^#?[0-9A-Fa-f]{0,6}$/.test(v)) {
+                                  setAnswers((a) => ({
+                                    ...a,
+                                    couleur: v.startsWith("#") ? v : `#${v}`,
+                                  }));
+                                }
+                              }}
+                              className="h-10 font-mono text-sm uppercase"
+                              maxLength={7}
+                            />
+                          </div>
+                        </div>
+
+                        <div
+                          role="radiogroup"
+                          aria-label="Couleurs prédéfinies"
+                          className="mt-4 flex flex-wrap gap-2"
+                        >
+                          {COLOR_PRESETS.map((c) => {
+                            const active =
+                              answers.couleur.toLowerCase() ===
+                              c.hex.toLowerCase();
+                            return (
+                              <button
+                                key={c.hex}
+                                type="button"
+                                role="radio"
+                                aria-checked={active}
+                                aria-label={c.name}
+                                onClick={() =>
+                                  setAnswers((a) => ({
+                                    ...a,
+                                    couleur: c.hex,
+                                  }))
+                                }
+                                className={cn(
+                                  "relative h-9 w-9 rounded-full border-2 transition-all",
+                                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                                  active
+                                    ? "scale-110 border-foreground shadow-md"
+                                    : "border-transparent hover:scale-105"
+                                )}
+                                style={{ backgroundColor: c.hex }}
+                              />
+                            );
+                          })}
+                        </div>
+
+                        <p className="mt-4 text-xs text-muted-foreground">
+                          Cette couleur servira de fil conducteur aux boutons,
+                          liens et accents graphiques du site.
+                        </p>
+                      </div>
+                    </div>
+                  </StepWrapper>
+                )}
+
                 {step === "fonctionnalites" && (
                   <StepWrapper
                     title="Quelles fonctionnalités souhaitez-vous ?"
@@ -555,6 +788,74 @@ export function Questionnaire() {
                       Besoin d'une fonctionnalité spécifique ? Mentionnez-la à
                       l'étape suivante dans le champ « votre projet ».
                     </p>
+                  </StepWrapper>
+                )}
+
+                {step === "contenu" && (
+                  <StepWrapper
+                    title="Du contenu à importer ?"
+                    subtitle="Si vous avez déjà une présence en ligne, nous pouvons récupérer vos textes, photos et avis automatiquement. Tous les champs sont facultatifs."
+                  >
+                    <div className="space-y-4">
+                      <UrlField
+                        id="siteActuel"
+                        label="Site web actuel"
+                        placeholder="https://votre-entreprise.fr"
+                        icon={Globe}
+                        value={answers.siteActuel}
+                        onChange={(v) =>
+                          setAnswers((a) => ({ ...a, siteActuel: v }))
+                        }
+                      />
+                      <UrlField
+                        id="googleBusiness"
+                        label="Google My Business"
+                        placeholder="https://g.page/votre-etablissement"
+                        icon={MapPin}
+                        value={answers.googleBusiness}
+                        onChange={(v) =>
+                          setAnswers((a) => ({ ...a, googleBusiness: v }))
+                        }
+                      />
+                      <UrlField
+                        id="instagram"
+                        label="Instagram"
+                        placeholder="@votre_compte"
+                        icon={Instagram}
+                        value={answers.instagram}
+                        onChange={(v) =>
+                          setAnswers((a) => ({ ...a, instagram: v }))
+                        }
+                      />
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <UrlField
+                          id="facebook"
+                          label="Facebook"
+                          placeholder="facebook.com/votre-page"
+                          icon={Facebook}
+                          value={answers.facebook}
+                          onChange={(v) =>
+                            setAnswers((a) => ({ ...a, facebook: v }))
+                          }
+                        />
+                        <UrlField
+                          id="linkedin"
+                          label="LinkedIn"
+                          placeholder="linkedin.com/company/…"
+                          icon={Linkedin}
+                          value={answers.linkedin}
+                          onChange={(v) =>
+                            setAnswers((a) => ({ ...a, linkedin: v }))
+                          }
+                        />
+                      </div>
+
+                      <p className="pt-2 text-xs text-muted-foreground">
+                        Nous importerons automatiquement vos textes, photos et
+                        avis clients si vous nous fournissez ces liens. Aucun
+                        accès n'est requis.
+                      </p>
+                    </div>
                   </StepWrapper>
                 )}
 
@@ -778,6 +1079,50 @@ function StepWrapper({
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
       </header>
       {children}
+    </div>
+  );
+}
+
+function UrlField({
+  id,
+  label,
+  placeholder,
+  icon: Icon,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  placeholder: string;
+  icon: React.ComponentType<{ className?: string }>;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-sm font-medium"
+      >
+        {label}{" "}
+        <span className="font-normal text-muted-foreground">(optionnel)</span>
+      </label>
+      <div className="relative">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground"
+        >
+          <Icon className="h-4 w-4" />
+        </span>
+        <Input
+          id={id}
+          inputMode="url"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="pl-10"
+        />
+      </div>
     </div>
   );
 }
