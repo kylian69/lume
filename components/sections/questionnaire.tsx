@@ -210,6 +210,11 @@ export function Questionnaire() {
   const [done, setDone] = React.useState(false);
   const [answers, setAnswers] = React.useState<Answers>(EMPTY);
   const [showAllMetiers, setShowAllMetiers] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const [submitResult, setSubmitResult] = React.useState<{
+    newAccount: boolean;
+    tempPassword: string | null;
+  } | null>(null);
 
   React.useEffect(() => {
     if (METIERS_MORE.some((m) => m.id === answers.metier)) {
@@ -312,18 +317,52 @@ export function Questionnaire() {
     if (step !== "loading") return;
     setProgress(0);
     setDone(false);
+    setSubmitError(null);
+    setSubmitResult(null);
     const start = Date.now();
     const duration = 2800;
-    const id = window.setInterval(() => {
+    let cancelled = false;
+
+    const progressTimer = window.setInterval(() => {
+      if (cancelled) return;
       const elapsed = Date.now() - start;
-      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
+      const pct = Math.min(95, Math.round((elapsed / duration) * 95));
       setProgress(pct);
-      if (pct >= 100) {
-        window.clearInterval(id);
-        setDone(true);
-      }
     }, 40);
-    return () => window.clearInterval(id);
+
+    (async () => {
+      try {
+        const res = await fetch("/api/questionnaire", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(answers),
+        });
+        const data = await res.json();
+        if (cancelled) return;
+        if (!res.ok) {
+          setSubmitError(data?.error || "Erreur lors de l'envoi.");
+        } else {
+          setSubmitResult({
+            newAccount: !!data.newAccount,
+            tempPassword: data.tempPassword ?? null,
+          });
+        }
+      } catch {
+        if (!cancelled) setSubmitError("Connexion impossible. Réessayez.");
+      } finally {
+        if (!cancelled) {
+          window.clearInterval(progressTimer);
+          setProgress(100);
+          setDone(true);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(progressTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const stepNumber = Math.min(stepIndex + 1, TOTAL_STEPS);
@@ -996,6 +1035,29 @@ export function Questionnaire() {
                           {progress}%
                         </p>
                       </>
+                    ) : submitError ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center"
+                      >
+                        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                          <Loader2 className="h-8 w-8" aria-hidden />
+                        </span>
+                        <h3 className="mt-6 text-2xl font-semibold tracking-tight">
+                          Un problème est survenu
+                        </h3>
+                        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                          {submitError}
+                        </p>
+                        <Button
+                          className="mt-8"
+                          size="lg"
+                          onClick={() => goTo(STEPS.indexOf("coordonnees"))}
+                        >
+                          Réessayer
+                        </Button>
+                      </motion.div>
                     ) : (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -1016,16 +1078,52 @@ export function Questionnaire() {
                           . Un aperçu vous attend dans votre boîte mail d'ici 24
                           heures.
                         </p>
-                        <Button
-                          className="mt-8"
-                          size="lg"
-                          onClick={() => {
-                            setAnswers(EMPTY);
-                            goTo(0);
-                          }}
-                        >
-                          Configurer un autre site
-                        </Button>
+
+                        {submitResult?.newAccount && submitResult.tempPassword && (
+                          <div className="mt-6 w-full max-w-md rounded-2xl border border-primary/20 bg-primary/5 p-4 text-left">
+                            <p className="text-sm font-semibold text-foreground">
+                              Votre espace client est actif
+                            </p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Identifiants temporaires — pensez à changer votre
+                              mot de passe à la première connexion.
+                            </p>
+                            <div className="mt-3 space-y-1.5 rounded-lg bg-background/60 p-3 text-xs">
+                              <div>
+                                <span className="text-muted-foreground">
+                                  Email :{" "}
+                                </span>
+                                <span className="font-medium">
+                                  {answers.email}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">
+                                  Mot de passe :{" "}
+                                </span>
+                                <span className="font-mono font-medium">
+                                  {submitResult.tempPassword}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+                          <Button size="lg" asChild>
+                            <a href="/portal">Accéder à mon espace</a>
+                          </Button>
+                          <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() => {
+                              setAnswers(EMPTY);
+                              goTo(0);
+                            }}
+                          >
+                            Configurer un autre site
+                          </Button>
+                        </div>
                       </motion.div>
                     )}
                   </div>

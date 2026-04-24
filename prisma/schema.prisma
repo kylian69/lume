@@ -1,0 +1,363 @@
+// Lume - schéma de données
+// CRM interne + portail client
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ──────────────────────────────────────────────────────────────
+// Authentification / comptes
+// ──────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String?
+  name            String?
+  phone           String?
+  role            Role      @default(CLIENT)
+  emailVerified   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  prospect        Prospect?
+  projects        Project[]
+  subscriptions   Subscription[]
+  tickets         SupportTicket[]       @relation("TicketAuthor")
+  ticketMessages  TicketMessage[]
+  customizations  CustomizationRequest[]
+  notesAuthored   ProspectNote[]        @relation("NoteAuthor")
+  activities      ActivityLog[]
+}
+
+// ──────────────────────────────────────────────────────────────
+// Funnel commercial : prospects → clients
+// ──────────────────────────────────────────────────────────────
+
+enum ProspectStatus {
+  NEW            // Nouveau prospect
+  CONTACTED      // Premier contact fait
+  QUALIFIED      // Besoin qualifié
+  PROPOSAL_SENT  // Devis / maquette envoyé
+  NEGOTIATING    // En négociation
+  WON            // Converti en client
+  LOST           // Perdu
+  ARCHIVED       // Archivé
+}
+
+enum ProspectSource {
+  QUESTIONNAIRE
+  QUOTE_FORM
+  CONTACT
+  REFERRAL
+  MANUAL
+}
+
+model Prospect {
+  id              String         @id @default(cuid())
+  userId          String?        @unique
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  companyName     String
+  contactName     String?
+  email           String
+  phone           String?
+
+  status          ProspectStatus @default(NEW)
+  source          ProspectSource @default(QUESTIONNAIRE)
+  stageChangedAt  DateTime       @default(now())
+
+  questionnaire   QuestionnaireResponse?
+  quoteRequests   QuoteRequest[]
+  notes           ProspectNote[]
+
+  estimatedValue  Int?           // en centimes d'euros
+  assignedToId    String?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+}
+
+model ProspectNote {
+  id         String   @id @default(cuid())
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User?    @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([prospectId])
+}
+
+// Réponse complète au questionnaire multi-étapes
+model QuestionnaireResponse {
+  id                String    @id @default(cuid())
+  prospectId        String    @unique
+  prospect          Prospect  @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  metier            String?
+  metierCustom      String?
+  objectifs         String    // JSON array
+  objectifCustom    String?
+  style             String?
+  inspiration       String?
+  logoName          String?
+  logoPreview       String?   // base64 ou URL
+  couleur           String?
+  fonctionnalites   String    // JSON array
+  siteActuel        String?
+  googleBusiness    String?
+  instagram         String?
+  facebook          String?
+  linkedin          String?
+  message           String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+enum QuoteStatus {
+  PENDING
+  SENT
+  ACCEPTED
+  REFUSED
+  EXPIRED
+}
+
+model QuoteRequest {
+  id          String      @id @default(cuid())
+  prospectId  String?
+  prospect    Prospect?   @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  planType    String?     // "START" | "STANDARD" | "PRO"
+  subscription String?    // "NONE" | "LIGHT" | "COMPLETE"
+  budget      Int?        // centimes
+  timeline    String?
+  details     String?
+
+  status      QuoteStatus @default(PENDING)
+  amount      Int?        // montant devis en centimes
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([status])
+}
+
+// ──────────────────────────────────────────────────────────────
+// Client : projets, abonnements
+// ──────────────────────────────────────────────────────────────
+
+enum ProjectStatus {
+  BRIEF         // Brief en cours
+  DESIGN        // Maquette en préparation
+  DEVELOPMENT   // Développement
+  REVIEW        // Revue client
+  LIVE          // En ligne
+  PAUSED
+  ARCHIVED
+}
+
+enum PlanType {
+  START
+  STANDARD
+  PRO
+}
+
+model Project {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String
+  slug            String        @unique
+  domain          String?
+  previewUrl      String?
+  status          ProjectStatus @default(BRIEF)
+  planType        PlanType      @default(START)
+  launchedAt      DateTime?
+
+  primaryColor    String?
+  logoUrl         String?
+
+  subscriptions   Subscription[]
+  customizations  CustomizationRequest[]
+  tickets         SupportTicket[]
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+enum SubscriptionTier {
+  NONE
+  LIGHT
+  COMPLETE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  PAUSED
+}
+
+model Subscription {
+  id             String             @id @default(cuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  tier           SubscriptionTier   @default(LIGHT)
+  status         SubscriptionStatus @default(ACTIVE)
+  monthlyAmount  Int                // centimes
+  currency       String             @default("EUR")
+
+  currentPeriodStart DateTime       @default(now())
+  currentPeriodEnd   DateTime
+  canceledAt     DateTime?
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ──────────────────────────────────────────────────────────────
+// Demandes de personnalisation
+// ──────────────────────────────────────────────────────────────
+
+enum CustomizationStatus {
+  SUBMITTED
+  IN_REVIEW
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+enum CustomizationPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+model CustomizationRequest {
+  id          String                @id @default(cuid())
+  userId      String
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  title       String
+  description String
+  category    String?               // "contenu" | "design" | "fonctionnalite" | "seo" | "autre"
+  priority    CustomizationPriority @default(NORMAL)
+  status      CustomizationStatus   @default(SUBMITTED)
+
+  completedAt DateTime?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ──────────────────────────────────────────────────────────────
+// Support
+// ──────────────────────────────────────────────────────────────
+
+enum TicketStatus {
+  OPEN
+  WAITING_CLIENT
+  WAITING_STAFF
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum TicketCategory {
+  TECHNIQUE
+  FACTURATION
+  CONTENU
+  FONCTIONNALITE
+  AUTRE
+}
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  authorId    String
+  author      User           @relation("TicketAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  subject     String
+  category    TicketCategory @default(AUTRE)
+  priority    TicketPriority @default(NORMAL)
+  status      TicketStatus   @default(OPEN)
+
+  messages    TicketMessage[]
+
+  closedAt    DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([authorId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id          String        @id @default(cuid())
+  ticketId    String
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content     String
+  isInternal  Boolean       @default(false) // note interne invisible au client
+  createdAt   DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+// ──────────────────────────────────────────────────────────────
+// Journal d'activité
+// ──────────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  entityType String   // "prospect" | "project" | "ticket" | "subscription"
+  entityId   String
+  action     String   // "created" | "status_changed" | "note_added" | ...
+  metadata   String?  // JSON
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

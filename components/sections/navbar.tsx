@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserCircle } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,8 +21,13 @@ export function Navbar() {
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const { data: session, status } = useSession();
 
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 12));
+
+  const accountHref =
+    session?.user?.role === "ADMIN" ? "/admin" : "/portal";
+  const isAuthed = status === "authenticated";
 
   return (
     <motion.header
@@ -58,6 +64,18 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
+          {isAuthed ? (
+            <Button asChild size="sm" variant="outline">
+              <Link href={accountHref}>
+                <UserCircle className="h-4 w-4" />
+                Mon espace
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/login">Se connecter</Link>
+            </Button>
+          )}
           <Button asChild size="sm">
             <a href="#questionnaire">Démarrer mon projet</a>
           </Button>
@@ -96,6 +114,22 @@ export function Navbar() {
               </li>
             ))}
             <li className="pt-2">
+              {isAuthed ? (
+                <Button asChild variant="outline" className="w-full">
+                  <Link href={accountHref} onClick={() => setOpen(false)}>
+                    <UserCircle className="h-4 w-4" />
+                    Mon espace
+                  </Link>
+                </Button>
+              ) : (
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/login" onClick={() => setOpen(false)}>
+                    Se connecter
+                  </Link>
+                </Button>
+              )}
+            </li>
+            <li>
               <Button asChild className="w-full">
                 <a href="#questionnaire" onClick={() => setOpen(false)}>
                   Démarrer mon projet
