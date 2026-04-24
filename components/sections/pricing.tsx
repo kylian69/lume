@@ -150,37 +150,39 @@ export function Pricing() {
           </p>
         </div>
 
-        <div
-          role="tablist"
-          aria-label="Mode d'abonnement"
-          className="mx-auto mt-10 inline-flex w-full max-w-2xl items-stretch justify-center rounded-full border border-border/60 bg-muted/40 p-1.5"
-        >
-          {SUB_MODES.map((m) => {
-            const active = mode === m.id;
-            return (
-              <button
-                key={m.id}
-                role="tab"
-                aria-selected={active}
-                onClick={() => setMode(m.id)}
-                className={cn(
-                  "relative flex-1 rounded-full px-3 py-2.5 text-xs font-medium transition-colors sm:text-sm",
-                  active
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="sub-mode-pill"
-                    className="absolute inset-0 rounded-full bg-primary shadow-sm"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
-                <span className="relative">{m.label}</span>
-              </button>
-            );
-          })}
+        <div className="mt-10 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Mode d'abonnement"
+            className="flex w-full max-w-2xl items-stretch rounded-full border border-border/60 bg-muted/40 p-1.5"
+          >
+            {SUB_MODES.map((m) => {
+              const active = mode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setMode(m.id)}
+                  className={cn(
+                    "relative flex-1 rounded-full px-3 py-2.5 text-xs font-medium transition-colors sm:text-sm",
+                    active
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="sub-mode-pill"
+                      className="absolute inset-0 rounded-full bg-primary shadow-sm"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative">{m.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <p className="mt-3 text-center text-xs text-muted-foreground">
