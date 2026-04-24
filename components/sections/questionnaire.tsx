@@ -39,6 +39,7 @@ import {
   Lock,
   MessageCircle,
   Package,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,15 +60,18 @@ type Answers = {
   message: string;
 };
 
-const METIERS = [
+const METIERS_POPULAR = [
   { id: "restaurateur", label: "Restaurateur", icon: ChefHat },
   { id: "artisan", label: "Artisan", icon: Hammer },
   { id: "consultant", label: "Consultant", icon: Briefcase },
   { id: "sante", label: "Santé", icon: Stethoscope },
-  { id: "beaute", label: "Coiffure & beauté", icon: Scissors },
-  { id: "immobilier", label: "Immobilier", icon: Home },
   { id: "coach", label: "Coach / Formateur", icon: GraduationCap },
   { id: "ecommerce", label: "E-commerce", icon: ShoppingBag },
+];
+
+const METIERS_MORE = [
+  { id: "beaute", label: "Coiffure & beauté", icon: Scissors },
+  { id: "immobilier", label: "Immobilier", icon: Home },
   { id: "photographe", label: "Photographe", icon: Camera },
   { id: "juridique", label: "Juridique / Conseil", icon: Scale },
   { id: "bien-etre", label: "Bien-être / Sport", icon: Dumbbell },
@@ -171,6 +175,13 @@ export function Questionnaire() {
   const [progress, setProgress] = React.useState(0);
   const [done, setDone] = React.useState(false);
   const [answers, setAnswers] = React.useState<Answers>(EMPTY);
+  const [showAllMetiers, setShowAllMetiers] = React.useState(false);
+
+  React.useEffect(() => {
+    if (METIERS_MORE.some((m) => m.id === answers.metier)) {
+      setShowAllMetiers(true);
+    }
+  }, [answers.metier]);
 
   const step: Step = STEPS[stepIndex];
 
@@ -311,7 +322,7 @@ export function Questionnaire() {
                     subtitle="Sélectionnez votre domaine — ou décrivez-le si le vôtre ne figure pas dans la liste."
                   >
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {METIERS.map((m) => (
+                      {METIERS_POPULAR.map((m) => (
                         <OptionCard
                           key={m.id}
                           icon={m.icon}
@@ -322,6 +333,27 @@ export function Questionnaire() {
                           }
                         />
                       ))}
+                      <AnimatePresence initial={false}>
+                        {showAllMetiers &&
+                          METIERS_MORE.map((m) => (
+                            <motion.div
+                              key={m.id}
+                              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <OptionCard
+                                icon={m.icon}
+                                label={m.label}
+                                selected={answers.metier === m.id}
+                                onClick={() =>
+                                  setAnswers((a) => ({ ...a, metier: m.id }))
+                                }
+                              />
+                            </motion.div>
+                          ))}
+                      </AnimatePresence>
                       <OptionCard
                         icon={Sparkles}
                         label="Autre"
@@ -333,6 +365,27 @@ export function Questionnaire() {
                       />
                     </div>
 
+                    <div className="mt-4 flex justify-center">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAllMetiers((v) => !v)}
+                        className="gap-1.5 text-muted-foreground hover:text-foreground"
+                      >
+                        {showAllMetiers
+                          ? "Voir moins"
+                          : "Voir plus de métiers"}
+                        <ChevronDown
+                          className={cn(
+                            "h-4 w-4 transition-transform",
+                            showAllMetiers && "rotate-180"
+                          )}
+                          aria-hidden
+                        />
+                      </Button>
+                    </div>
+
                     <AnimatePresence>
                       {answers.metier === "autre" && (
                         <motion.div
@@ -341,23 +394,25 @@ export function Questionnaire() {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden"
                         >
-                          <label
-                            htmlFor="metierCustom"
-                            className="mb-1.5 mt-6 block text-sm font-medium"
-                          >
-                            Précisez votre métier
-                          </label>
-                          <Input
-                            id="metierCustom"
-                            placeholder="Ex : torréfacteur artisanal, fleuriste, studio de podcast…"
-                            value={answers.metierCustom}
-                            onChange={(e) =>
-                              setAnswers((a) => ({
-                                ...a,
-                                metierCustom: e.target.value,
-                              }))
-                            }
-                          />
+                          <div className="px-1 pb-1 pt-6">
+                            <label
+                              htmlFor="metierCustom"
+                              className="mb-1.5 block text-sm font-medium"
+                            >
+                              Précisez votre métier
+                            </label>
+                            <Input
+                              id="metierCustom"
+                              placeholder="Ex : torréfacteur artisanal, fleuriste, studio de podcast…"
+                              value={answers.metierCustom}
+                              onChange={(e) =>
+                                setAnswers((a) => ({
+                                  ...a,
+                                  metierCustom: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -397,23 +452,25 @@ export function Questionnaire() {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden"
                         >
-                          <label
-                            htmlFor="objectifCustom"
-                            className="mb-1.5 mt-6 block text-sm font-medium"
-                          >
-                            Décrivez votre objectif
-                          </label>
-                          <Input
-                            id="objectifCustom"
-                            placeholder="Ex : organiser un événement, vendre un livre blanc…"
-                            value={answers.objectifCustom}
-                            onChange={(e) =>
-                              setAnswers((a) => ({
-                                ...a,
-                                objectifCustom: e.target.value,
-                              }))
-                            }
-                          />
+                          <div className="px-1 pb-1 pt-6">
+                            <label
+                              htmlFor="objectifCustom"
+                              className="mb-1.5 block text-sm font-medium"
+                            >
+                              Décrivez votre objectif
+                            </label>
+                            <Input
+                              id="objectifCustom"
+                              placeholder="Ex : organiser un événement, vendre un livre blanc…"
+                              value={answers.objectifCustom}
+                              onChange={(e) =>
+                                setAnswers((a) => ({
+                                  ...a,
+                                  objectifCustom: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
