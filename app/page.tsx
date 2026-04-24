@@ -19,17 +19,27 @@ export default function HomePage() {
     offers: [
       {
         "@type": "Offer",
+        name: "Start",
+        price: "190",
+        priceCurrency: "EUR",
+        description:
+          "190€ en paiement unique. Abonnement optionnel : 9€/mois (Light) ou 19€/mois (Complet).",
+      },
+      {
+        "@type": "Offer",
         name: "Standard",
         price: "290",
         priceCurrency: "EUR",
-        description: "290€ de mise en service, puis 29€ / mois.",
+        description:
+          "290€ en paiement unique. Abonnement optionnel : 14€/mois (Light) ou 29€/mois (Complet).",
       },
       {
         "@type": "Offer",
         name: "Pro",
         price: "490",
         priceCurrency: "EUR",
-        description: "490€ de mise en service, puis 49€ / mois.",
+        description:
+          "490€ en paiement unique. Abonnement optionnel : 19€/mois (Light) ou 49€/mois (Complet).",
       },
     ],
   };
