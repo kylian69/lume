@@ -2,6 +2,7 @@ import { Navbar } from "@/components/sections/navbar";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Gallery } from "@/components/sections/gallery";
+import { Templates } from "@/components/sections/templates";
 import { Pricing } from "@/components/sections/pricing";
 import { About } from "@/components/sections/about";
 import { Questionnaire } from "@/components/sections/questionnaire";
@@ -17,6 +18,14 @@ export default function HomePage() {
       "Lume est une plateforme Website-as-a-Service qui livre un site professionnel optimisé SEO en moins de 24 heures.",
     sameAs: [],
     offers: [
+      {
+        "@type": "Offer",
+        name: "Modèle prêt à l'emploi",
+        price: "99",
+        priceCurrency: "EUR",
+        description:
+          "À partir de 99€ en paiement unique. Modèle pré-conçu par cœur de métier, livré en 48h.",
+      },
       {
         "@type": "Offer",
         name: "Start",
@@ -51,6 +60,7 @@ export default function HomePage() {
         <Hero />
         <HowItWorks />
         <Gallery />
+        <Templates />
         <Pricing />
         <About />
         <Questionnaire />

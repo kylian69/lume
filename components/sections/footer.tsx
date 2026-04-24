@@ -18,6 +18,11 @@ export function Footer() {
               </a>
             </li>
             <li>
+              <a href="#templates" className="hover:text-foreground">
+                Prêts à l'emploi
+              </a>
+            </li>
+            <li>
               <a href="#tarifs" className="hover:text-foreground">
                 Tarifs
               </a>
