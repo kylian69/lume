@@ -4,17 +4,42 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { LogOut, Menu, X } from "lucide-react";
+import {
+  LogOut,
+  Menu,
+  X,
+  LayoutDashboard,
+  Users,
+  Mailbox,
+  LifeBuoy,
+  UserCog,
+  Sparkles,
+  Globe,
+  CreditCard,
+  UserCircle,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
+const iconMap: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Users,
+  Mailbox,
+  LifeBuoy,
+  UserCog,
+  Sparkles,
+  Globe,
+  CreditCard,
+  UserCircle,
+};
+
 export type NavItem = {
   label: string;
   href: string;
-  icon: LucideIcon;
+  icon: string;
   badge?: number | string;
   exact?: boolean;
 };
@@ -74,7 +99,7 @@ export function AppShell({
             <nav className="flex-1 space-y-1 px-4">
               {items.map((item) => {
                 const active = isActive(item.href, item.exact);
-                const Icon = item.icon;
+                const Icon = iconMap[item.icon] || LayoutDashboard;
                 return (
                   <Link
                     key={item.href}

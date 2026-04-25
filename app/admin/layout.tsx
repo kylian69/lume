@@ -1,14 +1,6 @@
 import { requireRole } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { AppShell, type NavItem } from "@/components/shared/app-shell";
-import {
-  LayoutDashboard,
-  Users,
-  Mailbox,
-  LifeBuoy,
-  UserCog,
-  Sparkles,
-} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -33,29 +25,29 @@ export default async function AdminLayout({
     {
       label: "Tableau de bord",
       href: "/admin",
-      icon: LayoutDashboard,
+      icon: "LayoutDashboard",
       exact: true,
     },
     {
       label: "Prospects",
       href: "/admin/prospects",
-      icon: Mailbox,
+      icon: "Mailbox",
       badge: newProspects || undefined,
     },
-    { label: "Clients", href: "/admin/clients", icon: Users },
+    { label: "Clients", href: "/admin/clients", icon: "Users" },
     {
       label: "Personnalisations",
       href: "/admin/customizations",
-      icon: Sparkles,
+      icon: "Sparkles",
       badge: pendingCustomizations || undefined,
     },
     {
       label: "Support",
       href: "/admin/support",
-      icon: LifeBuoy,
+      icon: "LifeBuoy",
       badge: openTickets || undefined,
     },
-    { label: "Équipe", href: "/admin/team", icon: UserCog },
+    { label: "Équipe", href: "/admin/team", icon: "UserCog" },
   ];
 
   return (
@@ -64,3 +56,4 @@ export default async function AdminLayout({
     </AppShell>
   );
 }
+

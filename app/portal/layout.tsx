@@ -1,12 +1,4 @@
 import { redirect } from "next/navigation";
-import {
-  LayoutDashboard,
-  Globe,
-  Sparkles,
-  LifeBuoy,
-  CreditCard,
-  UserCircle,
-} from "lucide-react";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { AppShell, type NavItem } from "@/components/shared/app-shell";
@@ -33,23 +25,23 @@ export default async function PortalLayout({
     {
       label: "Accueil",
       href: "/portal",
-      icon: LayoutDashboard,
+      icon: "LayoutDashboard",
       exact: true,
     },
-    { label: "Mon site", href: "/portal/project", icon: Globe },
+    { label: "Mon site", href: "/portal/project", icon: "Globe" },
     {
       label: "Personnalisations",
       href: "/portal/customization",
-      icon: Sparkles,
+      icon: "Sparkles",
     },
-    { label: "Abonnement", href: "/portal/subscription", icon: CreditCard },
+    { label: "Abonnement", href: "/portal/subscription", icon: "CreditCard" },
     {
       label: "Support",
       href: "/portal/support",
-      icon: LifeBuoy,
+      icon: "LifeBuoy",
       badge: openTickets || undefined,
     },
-    { label: "Mon profil", href: "/portal/profile", icon: UserCircle },
+    { label: "Mon profil", href: "/portal/profile", icon: "UserCircle" },
   ];
 
   return (
@@ -58,3 +50,4 @@ export default async function PortalLayout({
     </AppShell>
   );
 }
+
