@@ -146,7 +146,7 @@ export function Pricing() {
           </h2>
           <p className="mt-4 text-muted-foreground">
             Payez votre site une seule fois. Ajoutez, si vous le souhaitez,
-            l'hébergement ou un suivi complet. Résiliable à tout moment.
+            l&apos;hébergement ou un suivi complet. Résiliable à tout moment.
           </p>
         </div>
 
@@ -272,7 +272,7 @@ export function Pricing() {
                     className="w-full"
                   >
                     <a href="#questionnaire">
-                      Choisir l'offre {plan.name}
+                      Choisir l&apos;offre {plan.name}
                     </a>
                   </Button>
                 </div>
@@ -282,7 +282,7 @@ export function Pricing() {
         </div>
 
         <p className="mx-auto mt-10 max-w-2xl text-center text-xs text-muted-foreground">
-          L'abonnement est totalement facultatif : vous pouvez acheter votre site une
+          L&apos;abonnement est totalement facultatif : vous pouvez acheter votre site une
           seule fois et le conserver. Vous pourrez activer ou résilier un abonnement
           à tout moment depuis votre espace client.
         </p>
