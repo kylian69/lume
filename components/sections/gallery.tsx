@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { TemplateMockup, type TemplateId } from "@/components/template-mockup";
+import { FittedMockup, type TemplateId } from "@/components/template-mockup";
 
 type Template = {
   id: TemplateId;
@@ -167,17 +167,17 @@ export function Gallery() {
               >
                 <div
                   className={cn(
-                    "relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br p-4",
+                    "relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br",
                     tpl.accent
                   )}
                 >
-                  <div className="h-full w-full transition-transform duration-300 group-hover:scale-[1.02]">
-                    <TemplateMockup id={tpl.id} compact />
+                  <div className="absolute inset-3 transition-transform duration-300 group-hover:scale-[1.02]">
+                    <FittedMockup id={tpl.id} />
                   </div>
 
                   <div
                     aria-hidden
-                    className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-gradient-to-t from-black/50 via-black/20 to-transparent py-3 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-gradient-to-t from-black/50 via-black/20 to-transparent py-3 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   >
                     Aperçu détaillé
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -207,13 +207,39 @@ export function Gallery() {
         labelledBy="template-preview-title"
         describedBy="template-preview-description"
       >
-        {active && <TemplatePreview template={active} />}
+        {active && (
+          <TemplatePreview
+            template={active}
+            onClose={() => setActiveId(null)}
+          />
+        )}
       </Dialog>
     </section>
   );
 }
 
-function TemplatePreview({ template }: { template: Template }) {
+function navigateAndClose(targetId: string, onClose: () => void) {
+  return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    onClose();
+    requestAnimationFrame(() => {
+      const el = document.getElementById(targetId);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", `#${targetId}`);
+      }
+    });
+  };
+}
+
+function TemplatePreview({
+  template,
+  onClose,
+}: {
+  template: Template;
+  onClose: () => void;
+}) {
   const Icon = template.icon;
 
   return (
@@ -225,7 +251,7 @@ function TemplatePreview({ template }: { template: Template }) {
         )}
       >
         <div className="aspect-[4/3] w-full">
-          <TemplateMockup id={template.id} />
+          <FittedMockup id={template.id} />
         </div>
         <p className="mt-4 text-center text-xs text-foreground/70">
           Aperçu indicatif — chaque livraison est personnalisée à vos contenus,
@@ -307,13 +333,18 @@ function TemplatePreview({ template }: { template: Template }) {
 
         <div className="mt-auto flex flex-col gap-2 sm:flex-row">
           <Button asChild className="flex-1">
-            <a href="#questionnaire">
+            <a
+              href="#questionnaire"
+              onClick={navigateAndClose("questionnaire", onClose)}
+            >
               Choisir ce modèle
               <ArrowRight className="h-4 w-4" />
             </a>
           </Button>
           <Button asChild variant="outline" className="flex-1">
-            <a href="#tarifs">Voir les tarifs</a>
+            <a href="#tarifs" onClick={navigateAndClose("tarifs", onClose)}>
+              Voir les tarifs
+            </a>
           </Button>
         </div>
       </div>
