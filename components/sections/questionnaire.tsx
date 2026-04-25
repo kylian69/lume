@@ -824,8 +824,8 @@ export function Questionnaire() {
                     </div>
 
                     <p className="mt-6 text-xs text-muted-foreground">
-                      Besoin d'une fonctionnalité spécifique ? Mentionnez-la à
-                      l'étape suivante dans le champ « votre projet ».
+                      Besoin d&apos;une fonctionnalité spécifique ? Mentionnez-la à
+                      l&apos;étape suivante dans le champ « votre projet ».
                     </p>
                   </StepWrapper>
                 )}
@@ -892,7 +892,7 @@ export function Questionnaire() {
                       <p className="pt-2 text-xs text-muted-foreground">
                         Nous importerons automatiquement vos textes, photos et
                         avis clients si vous nous fournissez ces liens. Aucun
-                        accès n'est requis.
+                        accès n&apos;est requis.
                       </p>
                     </div>
                   </StepWrapper>
@@ -916,7 +916,7 @@ export function Questionnaire() {
                             htmlFor="entreprise"
                             className="mb-1.5 block text-sm font-medium"
                           >
-                            Nom de l'entreprise
+                            Nom de l&apos;entreprise
                           </label>
                           <Input
                             id="entreprise"
@@ -1075,7 +1075,7 @@ export function Questionnaire() {
                           <span className="font-medium text-foreground">
                             {answers.entreprise || "votre entreprise"}
                           </span>
-                          . Un aperçu vous attend dans votre boîte mail d'ici 24
+                          . Un aperçu vous attend dans votre boîte mail d&apos;ici 24
                           heures.
                         </p>
 

@@ -41,7 +41,7 @@ export function HowItWorks() {
             Trois étapes pour briller
           </h2>
           <p className="mt-4 text-muted-foreground">
-            De l'inscription au déploiement, chaque étape est pensée pour vous
+            De l&apos;inscription au déploiement, chaque étape est pensée pour vous
             faire gagner du temps.
           </p>
         </div>
