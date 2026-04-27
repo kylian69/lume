@@ -6,6 +6,10 @@ import {
   Hammer,
   Briefcase,
   Stethoscope,
+  GraduationCap,
+  ShoppingBag,
+  Scissors,
+  Home,
   Star,
   Clock,
   MapPin,
@@ -15,10 +19,22 @@ import {
   TrendingUp,
   Users,
   Award,
+  Search,
+  Heart,
+  Bed,
+  Truck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TemplateId = "restaurateur" | "artisan" | "consultant" | "sante";
+export type TemplateId =
+  | "restaurateur"
+  | "artisan"
+  | "consultant"
+  | "sante"
+  | "coach"
+  | "ecommerce"
+  | "beaute"
+  | "immobilier";
 
 const DESIGN_WIDTH = 480;
 const DESIGN_HEIGHT = 360;
@@ -93,6 +109,10 @@ export function TemplateMockup({ id }: { id: TemplateId }) {
         {id === "artisan" && <ArtisanMockup />}
         {id === "consultant" && <ConsultantMockup />}
         {id === "sante" && <SanteMockup />}
+        {id === "coach" && <CoachMockup />}
+        {id === "ecommerce" && <EcommerceMockup />}
+        {id === "beaute" && <BeauteMockup />}
+        {id === "immobilier" && <ImmobilierMockup />}
       </div>
     </div>
   );
@@ -383,6 +403,270 @@ function SanteMockup() {
         <span className="flex items-center gap-1">
           <Phone className="h-3 w-3 text-emerald-600" />
           04 78 12 34 56
+        </span>
+      </div>
+    </>
+  );
+}
+
+function CoachMockup() {
+  const programs = [
+    { name: "Session 1h", price: "90 €", note: "Visio · 1-à-1" },
+    { name: "Atelier groupe", price: "240 €", note: "1/2 journée" },
+    { name: "Parcours 6 mois", price: "1 800 €", note: "Premium" },
+  ];
+  return (
+    <>
+      <SiteHeader
+        brand="Lume Academy"
+        links={["Programmes", "Avis", "Méthode"]}
+        cta="Réserver"
+        accent="bg-violet-600"
+        Icon={GraduationCap}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-violet-50 to-purple-100/60 px-4 py-3 dark:from-violet-500/10 dark:to-purple-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-300">
+          Coaching & formation
+        </p>
+        <p className="mt-0.5 text-[15px] font-semibold leading-tight">
+          Atteignez vos objectifs avec un cap clair.
+        </p>
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <span className="flex items-center gap-1">
+            <Star className="h-2.5 w-2.5 fill-violet-500 text-violet-500" />{" "}
+            4,9 · 86 avis
+          </span>
+          <span>·</span>
+          <span>Taux de satisfaction · 98 %</span>
+        </div>
+      </div>
+
+      <div className="grid flex-1 grid-cols-3 gap-2 p-3">
+        {programs.map((p) => (
+          <div
+            key={p.name}
+            className="flex flex-col rounded-md border border-violet-100 bg-white p-2 dark:border-white/10 dark:bg-white/5"
+          >
+            <div className="h-1 w-6 rounded-full bg-violet-500" />
+            <p className="mt-1.5 text-[11px] font-semibold leading-tight">
+              {p.name}
+            </p>
+            <p className="text-[9px] text-zinc-500 dark:text-zinc-400">
+              {p.note}
+            </p>
+            <p className="mt-auto text-[11px] font-semibold text-violet-700 dark:text-violet-300">
+              {p.price}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <CalendarCheck className="h-3 w-3 text-violet-600" />
+          Prochaine session : mar. 14h
+        </span>
+        <span className="rounded-full bg-violet-600 px-2.5 py-1 text-[10px] font-medium text-white">
+          Prendre RDV
+        </span>
+      </div>
+    </>
+  );
+}
+
+function EcommerceMockup() {
+  const products = [
+    { name: "Lin naturel", price: "89 €" },
+    { name: "Coton bio", price: "65 €" },
+    { name: "Maille douce", price: "79 €" },
+  ];
+  return (
+    <>
+      <SiteHeader
+        brand="Lume Store"
+        links={["Boutique", "Lookbook", "Compte"]}
+        cta="Panier · 2"
+        accent="bg-rose-600"
+        Icon={ShoppingBag}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-rose-50 to-pink-100/60 px-4 py-3 dark:from-rose-500/10 dark:to-pink-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-rose-700 dark:text-rose-300">
+          Nouvelle collection · Été
+        </p>
+        <p className="mt-0.5 text-[15px] font-semibold leading-tight">
+          Pièces fabriquées en France.
+        </p>
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <span className="flex items-center gap-1">
+            <Search className="h-2.5 w-2.5" /> Rechercher un produit
+          </span>
+          <span>·</span>
+          <span>32 références</span>
+        </div>
+      </div>
+
+      <div className="grid flex-1 grid-cols-3 gap-2 p-3">
+        {products.map((p) => (
+          <div
+            key={p.name}
+            className="flex flex-col overflow-hidden rounded-md border border-black/5 bg-white dark:border-white/10 dark:bg-white/5"
+          >
+            <div className="relative aspect-square bg-gradient-to-br from-rose-100 to-pink-200 dark:from-rose-500/20 dark:to-pink-500/10">
+              <span className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/80 text-rose-600 dark:bg-zinc-900/80">
+                <Heart className="h-2 w-2" />
+              </span>
+            </div>
+            <div className="p-1.5">
+              <p className="truncate text-[10px] font-medium">{p.name}</p>
+              <p className="text-[10px] font-semibold text-rose-700 dark:text-rose-300">
+                {p.price}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <Truck className="h-3 w-3 text-rose-600" />
+          Livraison offerte dès 80 €
+        </span>
+        <span className="rounded-full bg-rose-600 px-2.5 py-1 text-[10px] font-medium text-white">
+          Voir la collection
+        </span>
+      </div>
+    </>
+  );
+}
+
+function BeauteMockup() {
+  const services = [
+    { name: "Coupe + brushing", price: "45 €", duration: "45 min" },
+    { name: "Coloration", price: "à partir de 90 €", duration: "1h30" },
+    { name: "Soin profond", price: "60 €", duration: "30 min" },
+  ];
+  return (
+    <>
+      <SiteHeader
+        brand="Salon Lume"
+        links={["Carte", "Équipe", "Avis"]}
+        cta="Réserver"
+        accent="bg-fuchsia-600"
+        Icon={Scissors}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-fuchsia-50 to-pink-100/60 px-4 py-3 dark:from-fuchsia-500/10 dark:to-pink-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-fuchsia-700 dark:text-fuchsia-300">
+          Coiffure · Soins
+        </p>
+        <p className="mt-0.5 font-serif text-[15px] font-semibold leading-tight">
+          Le détail qui change tout.
+        </p>
+        <div className="mt-1.5 flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <Star className="h-2.5 w-2.5 fill-fuchsia-500 text-fuchsia-500" />
+          <Star className="h-2.5 w-2.5 fill-fuchsia-500 text-fuchsia-500" />
+          <Star className="h-2.5 w-2.5 fill-fuchsia-500 text-fuchsia-500" />
+          <Star className="h-2.5 w-2.5 fill-fuchsia-500 text-fuchsia-500" />
+          <Star className="h-2.5 w-2.5 fill-fuchsia-500 text-fuchsia-500" />
+          <span className="ml-1">5,0 · 214 avis Google</span>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
+        {services.map((s) => (
+          <div
+            key={s.name}
+            className="flex items-center justify-between rounded-md border border-fuchsia-100 bg-white px-2.5 py-1.5 text-[11px] dark:border-white/10 dark:bg-white/5"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-medium">{s.name}</p>
+              <p className="text-[9px] text-zinc-500 dark:text-zinc-400">
+                {s.duration}
+              </p>
+            </div>
+            <span className="shrink-0 font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+              {s.price}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <CalendarCheck className="h-3 w-3 text-fuchsia-600" />
+          Prochain RDV : jeu. 17h
+        </span>
+        <span className="rounded-full bg-fuchsia-600 px-2.5 py-1 text-[10px] font-medium text-white">
+          Prendre RDV
+        </span>
+      </div>
+    </>
+  );
+}
+
+function ImmobilierMockup() {
+  const listings = [
+    { type: "T3 · Lyon 7", area: "72 m²", price: "365 000 €" },
+    { type: "Maison · Tassin", area: "140 m²", price: "680 000 €" },
+    { type: "Loft · Croix-Rousse", area: "95 m²", price: "480 000 €" },
+  ];
+  return (
+    <>
+      <SiteHeader
+        brand="Lume Immo"
+        links={["Annonces", "Estimer", "Contact"]}
+        cta="Estimer"
+        accent="bg-sky-600"
+        Icon={Home}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-sky-50 to-blue-100/60 px-4 py-3 dark:from-sky-500/10 dark:to-blue-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-sky-700 dark:text-sky-300">
+          Sélection · Lyon & alentours
+        </p>
+        <p className="mt-0.5 font-serif text-[15px] font-semibold leading-tight">
+          Votre prochain chez-vous.
+        </p>
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <span className="flex items-center gap-1">
+            <Search className="h-2.5 w-2.5" /> Filtrer · Type · Surface · Prix
+          </span>
+        </div>
+      </div>
+
+      <div className="grid flex-1 grid-cols-3 gap-2 p-3">
+        {listings.map((l) => (
+          <div
+            key={l.type}
+            className="flex flex-col overflow-hidden rounded-md border border-black/5 bg-white dark:border-white/10 dark:bg-white/5"
+          >
+            <div className="relative aspect-[4/3] bg-gradient-to-br from-sky-100 to-blue-200 dark:from-sky-500/20 dark:to-blue-500/10">
+              <span className="absolute left-1 top-1 rounded bg-white/80 px-1 py-0.5 text-[8px] font-medium text-sky-700 dark:bg-zinc-900/80 dark:text-sky-300">
+                Nouveau
+              </span>
+            </div>
+            <div className="flex flex-1 flex-col p-1.5">
+              <p className="truncate text-[10px] font-semibold">{l.type}</p>
+              <p className="flex items-center gap-1 text-[9px] text-zinc-500 dark:text-zinc-400">
+                <Bed className="h-2 w-2" /> {l.area}
+              </p>
+              <p className="mt-auto text-[10px] font-semibold text-sky-700 dark:text-sky-300">
+                {l.price}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <MapPin className="h-3 w-3 text-sky-600" />
+          +12 nouveaux biens cette semaine
+        </span>
+        <span className="rounded-full bg-sky-600 px-2.5 py-1 text-[10px] font-medium text-white">
+          Voir les annonces
         </span>
       </div>
     </>

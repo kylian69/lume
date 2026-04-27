@@ -7,6 +7,10 @@ import {
   Hammer,
   Briefcase,
   Stethoscope,
+  GraduationCap,
+  ShoppingBag,
+  Scissors,
+  Home,
   ArrowRight,
   Check,
   FileText,
@@ -36,11 +40,11 @@ const TEMPLATES: Template[] = [
     name: "Restaurateur",
     tag: "Réservations · Menu",
     description:
-      "Un site qui met votre carte en valeur, sublime vos plats et facilite la réservation, en salle comme à emporter.",
+      "Met votre carte en valeur, sublime vos plats et facilite la réservation, en salle comme à emporter.",
     icon: ChefHat,
     accent:
       "from-amber-200/60 to-orange-200/40 dark:from-amber-500/20 dark:to-orange-500/10",
-    pages: ["Accueil", "Notre cuisine", "Carte & menu", "Réservation", "Contact & accès"],
+    pages: ["Accueil", "Notre cuisine", "Carte & menu", "Réservation", "Contact"],
     features: [
       "Module de réservation en ligne",
       "Carte digitale à jour en un clic",
@@ -58,7 +62,7 @@ const TEMPLATES: Template[] = [
     name: "Artisan",
     tag: "Devis · Réalisations",
     description:
-      "Un site sobre et crédible qui valorise vos chantiers, rassure vos prospects et génère des demandes de devis qualifiées.",
+      "Sobre et crédible, valorise vos chantiers et génère des demandes de devis qualifiées.",
     icon: Hammer,
     accent:
       "from-slate-200/70 to-zinc-200/40 dark:from-slate-500/20 dark:to-zinc-500/10",
@@ -80,17 +84,17 @@ const TEMPLATES: Template[] = [
     name: "Consultant",
     tag: "Expertise · Contact",
     description:
-      "Un site premium qui positionne votre expertise, raconte vos cas clients et déclenche des prises de contact qualifiées.",
+      "Premium, positionne votre expertise, raconte vos cas clients et déclenche des prises de contact.",
     icon: Briefcase,
     accent:
       "from-indigo-200/60 to-blue-200/40 dark:from-indigo-500/20 dark:to-blue-500/10",
-    pages: ["Accueil", "Expertises", "Cas clients", "À propos", "Prise de contact"],
+    pages: ["Accueil", "Expertises", "Cas clients", "À propos", "Contact"],
     features: [
       "Mise en récit des cas clients",
       "Téléchargement de livre blanc",
       "Prise de RDV intégrée (Calendly)",
       "Témoignages & logos clients",
-      "Page À propos avec CV en ligne",
+      "Page À propos avec parcours",
     ],
     highlights: [
       "Une scénographie qui inspire confiance dès la première seconde.",
@@ -102,21 +106,109 @@ const TEMPLATES: Template[] = [
     name: "Santé",
     tag: "Prise de RDV · Praticien",
     description:
-      "Un site rassurant et conforme qui présente le praticien, oriente les patients et permet la prise de rendez-vous en ligne.",
+      "Rassurant et conforme, présente le praticien et permet la prise de rendez-vous en ligne.",
     icon: Stethoscope,
     accent:
       "from-emerald-200/60 to-teal-200/40 dark:from-emerald-500/20 dark:to-teal-500/10",
-    pages: ["Accueil", "Le praticien", "Soins & tarifs", "Prise de RDV", "Accès & contact"],
+    pages: ["Accueil", "Le praticien", "Soins & tarifs", "Prise de RDV", "Accès"],
     features: [
       "Connexion Doctolib / agenda en ligne",
       "Présentation du praticien & diplômes",
-      "Informations conventionnement & tarifs",
+      "Conventionnement & tarifs",
       "Plan d'accès & horaires",
-      "Mentions légales conformes RGPD/santé",
+      "Mentions légales conformes RGPD",
     ],
     highlights: [
       "Ton sobre et rassurant, conforme aux usages du secteur.",
       "Accessibilité renforcée (contraste, navigation clavier).",
+    ],
+  },
+  {
+    id: "coach",
+    name: "Coach / Formateur",
+    tag: "Programmes · Réservation",
+    description:
+      "Met en avant vos programmes, vos résultats et permet la réservation de sessions individuelles ou collectives.",
+    icon: GraduationCap,
+    accent:
+      "from-violet-200/60 to-purple-200/40 dark:from-violet-500/20 dark:to-purple-500/10",
+    pages: ["Accueil", "Programmes", "Méthode", "Avis & résultats", "Réserver"],
+    features: [
+      "Catalogue de programmes & tarifs",
+      "Réservation de sessions en ligne",
+      "Témoignages & études de cas",
+      "Page méthode / philosophie",
+      "Téléchargement de ressources (PDF)",
+    ],
+    highlights: [
+      "Mise en avant claire de votre proposition de valeur.",
+      "Funnel pensé pour transformer le visiteur en participant.",
+    ],
+  },
+  {
+    id: "ecommerce",
+    name: "E-commerce",
+    tag: "Boutique · Paiement",
+    description:
+      "Une boutique en ligne complète, élégante et performante pour vendre vos produits dès le premier jour.",
+    icon: ShoppingBag,
+    accent:
+      "from-rose-200/60 to-pink-200/40 dark:from-rose-500/20 dark:to-pink-500/10",
+    pages: ["Boutique", "Fiche produit", "Panier & paiement", "Compte client", "FAQ livraison"],
+    features: [
+      "Catalogue produits avec variantes",
+      "Paiement sécurisé (Stripe)",
+      "Gestion des stocks & promotions",
+      "Compte client & suivi de commande",
+      "Optimisation taux de conversion",
+    ],
+    highlights: [
+      "Tunnel de paiement court, sans friction.",
+      "Prêt pour vos campagnes Meta & Google Ads.",
+    ],
+  },
+  {
+    id: "beaute",
+    name: "Coiffure & beauté",
+    tag: "Carte · Prise de RDV",
+    description:
+      "Met en valeur l'univers du salon, présente l'équipe et facilite la prise de rendez-vous en ligne.",
+    icon: Scissors,
+    accent:
+      "from-fuchsia-200/60 to-pink-200/40 dark:from-fuchsia-500/20 dark:to-pink-500/10",
+    pages: ["Accueil", "Carte des soins", "L'équipe", "Réserver", "Contact"],
+    features: [
+      "Réservation en ligne (Planity / autre)",
+      "Carte des soins & tarifs",
+      "Présentation de l'équipe",
+      "Galerie avant / après",
+      "Bons cadeaux à offrir",
+    ],
+    highlights: [
+      "Identité visuelle forte, ambiance soignée.",
+      "Mobile-first pour vos clientes en déplacement.",
+    ],
+  },
+  {
+    id: "immobilier",
+    name: "Immobilier",
+    tag: "Annonces · Estimation",
+    description:
+      "Met en scène vos biens, capte les vendeurs avec un outil d'estimation et qualifie les acheteurs.",
+    icon: Home,
+    accent:
+      "from-sky-200/60 to-blue-200/40 dark:from-sky-500/20 dark:to-blue-500/10",
+    pages: ["Accueil", "Annonces", "Bien à la une", "Estimer mon bien", "Contact"],
+    features: [
+      "Liste d'annonces filtrable",
+      "Fiche bien avec galerie & plan",
+      "Formulaire d'estimation en ligne",
+      "Alertes par email pour acheteurs",
+      "Intégration cartographique",
+    ],
+    highlights: [
+      "Crédibilité haut de gamme avec un design éditorial.",
+      "Captation de leads vendeurs et acheteurs.",
     ],
   },
 ];
@@ -133,7 +225,7 @@ export function Gallery() {
     >
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium text-primary">Modèles</p>
+          <p className="text-sm font-medium text-primary">Modèles prêts à l&apos;emploi</p>
           <h2
             id="gallery-title"
             className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
@@ -156,7 +248,7 @@ export function Gallery() {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
+              transition={{ duration: 0.5, delay: (i % 4) * 0.08 }}
               className="group overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
             >
               <button
@@ -185,8 +277,8 @@ export function Gallery() {
                 </div>
 
                 <div className="flex items-start justify-between gap-3 p-6">
-                  <div>
-                    <h3 className="text-base font-semibold tracking-tight">
+                  <div className="min-w-0">
+                    <h3 className="truncate text-base font-semibold tracking-tight">
                       {tpl.name}
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">{tpl.tag}</p>
@@ -206,6 +298,7 @@ export function Gallery() {
         onClose={() => setActiveId(null)}
         labelledBy="template-preview-title"
         describedBy="template-preview-description"
+        className="max-w-5xl"
       >
         {active && (
           <TemplatePreview
@@ -243,35 +336,35 @@ function TemplatePreview({
   const Icon = template.icon;
 
   return (
-    <div className="grid gap-0 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+    <div className="grid gap-0 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       <div
         className={cn(
-          "relative bg-gradient-to-br p-6 sm:p-8",
+          "relative flex flex-col justify-center bg-gradient-to-br p-5 sm:p-6",
           template.accent
         )}
       >
         <div className="aspect-[4/3] w-full">
           <FittedMockup id={template.id} />
         </div>
-        <p className="mt-4 text-center text-xs text-foreground/70">
+        <p className="mt-3 text-center text-[11px] text-foreground/70">
           Aperçu indicatif — chaque livraison est personnalisée à vos contenus,
           couleurs et logo.
         </p>
       </div>
 
-      <div className="flex flex-col gap-6 p-6 sm:p-8">
+      <div className="flex flex-col gap-4 p-5 sm:p-6">
         <header>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Icon className="h-5 w-5" />
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon className="h-4 w-4" />
             </span>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-primary">
-                Modèle {template.tag}
+            <div className="min-w-0">
+              <p className="truncate text-[11px] font-medium uppercase tracking-wider text-primary">
+                {template.tag}
               </p>
               <h3
                 id="template-preview-title"
-                className="text-2xl font-semibold tracking-tight"
+                className="truncate text-xl font-semibold tracking-tight sm:text-2xl"
               >
                 {template.name}
               </h3>
@@ -279,24 +372,24 @@ function TemplatePreview({
           </div>
           <p
             id="template-preview-description"
-            className="mt-4 text-sm text-muted-foreground"
+            className="mt-3 text-sm leading-relaxed text-muted-foreground"
           >
             {template.description}
           </p>
         </header>
 
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-foreground/80">
-            <Layers className="h-3.5 w-3.5 text-primary" />
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-foreground/80">
+            <Layers className="h-3 w-3 text-primary" />
             Pages incluses
           </p>
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1.5">
             {template.pages.map((p) => (
               <span
                 key={p}
-                className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-2.5 py-1 text-xs text-foreground/80"
+                className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-2 py-0.5 text-[11px] text-foreground/80"
               >
-                <FileText className="h-3 w-3 text-muted-foreground" />
+                <FileText className="h-2.5 w-2.5 text-muted-foreground" />
                 {p}
               </span>
             ))}
@@ -304,15 +397,15 @@ function TemplatePreview({
         </div>
 
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-foreground/80">
-            <Zap className="h-3.5 w-3.5 text-primary" />
+          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-foreground/80">
+            <Zap className="h-3 w-3 text-primary" />
             Fonctionnalités clés
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-2 space-y-1.5 text-[13px]">
             {template.features.map((f) => (
-              <li key={f} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
-                  <Check className="h-2.5 w-2.5" />
+              <li key={f} className="flex items-start gap-2">
+                <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Check className="h-2 w-2" />
                 </span>
                 <span className="text-foreground/90">{f}</span>
               </li>
@@ -320,10 +413,10 @@ function TemplatePreview({
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
-          <ul className="space-y-1.5 text-xs text-foreground/80">
+        <div className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
+          <ul className="space-y-1 text-[11px] text-foreground/80">
             {template.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2">
+              <li key={h} className="flex items-start gap-1.5">
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-primary" />
                 {h}
               </li>
@@ -331,8 +424,8 @@ function TemplatePreview({
           </ul>
         </div>
 
-        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
-          <Button asChild className="flex-1">
+        <div className="mt-auto flex flex-col gap-2 lg:flex-row">
+          <Button asChild className="min-w-0 flex-1">
             <a
               href="#questionnaire"
               onClick={navigateAndClose("questionnaire", onClose)}
@@ -341,7 +434,7 @@ function TemplatePreview({
               <ArrowRight className="h-4 w-4" />
             </a>
           </Button>
-          <Button asChild variant="outline" className="flex-1">
+          <Button asChild variant="outline" className="min-w-0 flex-1">
             <a href="#tarifs" onClick={navigateAndClose("tarifs", onClose)}>
               Voir les tarifs
             </a>

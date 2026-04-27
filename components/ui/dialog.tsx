@@ -75,7 +75,7 @@ export function Dialog({
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
             className={cn(
-              "relative max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-3xl border border-border/60 bg-card shadow-2xl shadow-primary/10",
+              "relative max-h-[90dvh] w-full max-w-3xl overflow-hidden rounded-3xl border border-border/60 bg-card shadow-2xl shadow-primary/10",
               className
             )}
           >
@@ -87,7 +87,7 @@ export function Dialog({
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
-            <div className="max-h-[90vh] overflow-y-auto overflow-x-hidden">
+            <div className="max-h-[90dvh] overflow-y-auto overflow-x-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {children}
             </div>
           </motion.div>
