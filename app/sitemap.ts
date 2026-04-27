@@ -4,7 +4,14 @@ const siteUrl = "https://lume.studio";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const paths = ["", "#modeles", "#tarifs", "#a-propos", "#questionnaire"];
+  const paths = [
+    "",
+    "#modeles",
+    "#tarifs",
+    "#a-propos",
+    "#questionnaire",
+    "mentions-legales",
+  ];
   return paths.map((path) => ({
     url: `${siteUrl}/${path}`,
     lastModified: now,
