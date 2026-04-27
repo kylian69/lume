@@ -2,7 +2,6 @@ import { Navbar } from "@/components/sections/navbar";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Gallery } from "@/components/sections/gallery";
-import { Templates } from "@/components/sections/templates";
 import { Pricing } from "@/components/sections/pricing";
 import { About } from "@/components/sections/about";
 import { Questionnaire } from "@/components/sections/questionnaire";
@@ -60,7 +59,6 @@ export default function HomePage() {
         <Hero />
         <HowItWorks />
         <Gallery />
-        <Templates />
         <Pricing />
         <About />
         <Questionnaire />
