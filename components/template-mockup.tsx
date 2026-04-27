@@ -7,9 +7,11 @@ import {
   Briefcase,
   Stethoscope,
   GraduationCap,
-  ShoppingBag,
   Scissors,
   Home,
+  Camera,
+  Scale,
+  BookOpen,
   Star,
   Clock,
   MapPin,
@@ -20,9 +22,10 @@ import {
   Users,
   Award,
   Search,
-  Heart,
   Bed,
-  Truck,
+  PlayCircle,
+  ImageIcon,
+  Aperture,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,10 +33,12 @@ export type TemplateId =
   | "restaurateur"
   | "artisan"
   | "consultant"
+  | "cabinet"
   | "sante"
+  | "academy"
   | "coach"
-  | "ecommerce"
-  | "beaute"
+  | "lens"
+  | "studio"
   | "immobilier";
 
 const DESIGN_WIDTH = 480;
@@ -108,10 +113,12 @@ export function TemplateMockup({ id }: { id: TemplateId }) {
         {id === "restaurateur" && <RestaurateurMockup />}
         {id === "artisan" && <ArtisanMockup />}
         {id === "consultant" && <ConsultantMockup />}
+        {id === "cabinet" && <CabinetMockup />}
         {id === "sante" && <SanteMockup />}
+        {id === "academy" && <AcademyMockup />}
         {id === "coach" && <CoachMockup />}
-        {id === "ecommerce" && <EcommerceMockup />}
-        {id === "beaute" && <BeauteMockup />}
+        {id === "lens" && <LensMockup />}
+        {id === "studio" && <StudioMockup />}
         {id === "immobilier" && <ImmobilierMockup />}
       </div>
     </div>
@@ -475,53 +482,119 @@ function CoachMockup() {
   );
 }
 
-function EcommerceMockup() {
-  const products = [
-    { name: "Lin naturel", price: "89 €" },
-    { name: "Coton bio", price: "65 €" },
-    { name: "Maille douce", price: "79 €" },
+function CabinetMockup() {
+  const expertises = [
+    "Droit du travail",
+    "Droit des sociétés",
+    "Contentieux commercial",
   ];
   return (
     <>
       <SiteHeader
-        brand="Lume Store"
-        links={["Boutique", "Lookbook", "Compte"]}
-        cta="Panier · 2"
-        accent="bg-rose-600"
-        Icon={ShoppingBag}
+        brand="Cabinet Lume"
+        links={["Expertises", "Cabinet", "Honoraires"]}
+        cta="Prendre RDV"
+        accent="bg-stone-700"
+        Icon={Scale}
       />
 
-      <div className="shrink-0 bg-gradient-to-br from-rose-50 to-pink-100/60 px-4 py-3 dark:from-rose-500/10 dark:to-pink-500/5">
-        <p className="text-[9px] font-medium uppercase tracking-wider text-rose-700 dark:text-rose-300">
-          Nouvelle collection · Été
+      <div className="shrink-0 bg-gradient-to-br from-stone-50 to-amber-50/60 px-4 py-3 dark:from-stone-500/10 dark:to-amber-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-stone-600 dark:text-stone-300">
+          Avocat · Barreau de Paris
         </p>
-        <p className="mt-0.5 text-[15px] font-semibold leading-tight">
-          Pièces fabriquées en France.
+        <p className="mt-0.5 font-serif text-[15px] font-semibold leading-tight">
+          Une expertise au service de votre stratégie.
         </p>
         <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
           <span className="flex items-center gap-1">
-            <Search className="h-2.5 w-2.5" /> Rechercher un produit
+            <Award className="h-2.5 w-2.5" /> 22 ans d&apos;expérience
           </span>
           <span>·</span>
-          <span>32 références</span>
+          <span>Premier RDV gratuit</span>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
+        {expertises.map((e) => (
+          <div
+            key={e}
+            className="flex items-center justify-between rounded-md border border-stone-200 bg-white px-2.5 py-1.5 text-[11px] dark:border-white/10 dark:bg-white/5"
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="h-1 w-3 rounded-full bg-stone-700 dark:bg-stone-400" />
+              <span className="truncate font-medium">{e}</span>
+            </span>
+            <span className="shrink-0 text-stone-700 dark:text-stone-300">
+              →
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <MapPin className="h-3 w-3 text-stone-700" />
+          15 rue de la Paix, Paris 8ᵉ
+        </span>
+        <span className="rounded-full bg-stone-800 px-2.5 py-1 text-[10px] font-medium text-white">
+          Prendre RDV
+        </span>
+      </div>
+    </>
+  );
+}
+
+function AcademyMockup() {
+  const courses = [
+    { name: "SEO Avancé", duration: "12h", rating: "4,9" },
+    { name: "Copywriting", duration: "8h", rating: "4,8" },
+    { name: "No-code", duration: "16h", rating: "4,9" },
+  ];
+  return (
+    <>
+      <SiteHeader
+        brand="Lume Academy"
+        links={["Catalogue", "Mentors", "Avis"]}
+        cta="Commencer"
+        accent="bg-violet-600"
+        Icon={BookOpen}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-violet-50 to-fuchsia-100/60 px-4 py-3 dark:from-violet-500/10 dark:to-fuchsia-500/5">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-300">
+          Formations métier · 100 % en ligne
+        </p>
+        <p className="mt-0.5 text-[15px] font-semibold leading-tight">
+          Apprenez à votre rythme, avec des experts.
+        </p>
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <span className="flex items-center gap-1">
+            <Users className="h-2.5 w-2.5" /> 2 400 apprenants
+          </span>
+          <span>·</span>
+          <span>Certifiantes</span>
         </div>
       </div>
 
       <div className="grid flex-1 grid-cols-3 gap-2 p-3">
-        {products.map((p) => (
+        {courses.map((c) => (
           <div
-            key={p.name}
-            className="flex flex-col overflow-hidden rounded-md border border-black/5 bg-white dark:border-white/10 dark:bg-white/5"
+            key={c.name}
+            className="flex flex-col overflow-hidden rounded-md border border-violet-100 bg-white dark:border-white/10 dark:bg-white/5"
           >
-            <div className="relative aspect-square bg-gradient-to-br from-rose-100 to-pink-200 dark:from-rose-500/20 dark:to-pink-500/10">
-              <span className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/80 text-rose-600 dark:bg-zinc-900/80">
-                <Heart className="h-2 w-2" />
+            <div className="relative aspect-[4/3] bg-gradient-to-br from-violet-200 to-fuchsia-200 dark:from-violet-500/20 dark:to-fuchsia-500/10">
+              <span className="absolute inset-0 flex items-center justify-center text-violet-700 dark:text-violet-200">
+                <PlayCircle className="h-5 w-5" />
               </span>
             </div>
             <div className="p-1.5">
-              <p className="truncate text-[10px] font-medium">{p.name}</p>
-              <p className="text-[10px] font-semibold text-rose-700 dark:text-rose-300">
-                {p.price}
+              <p className="truncate text-[10px] font-semibold">{c.name}</p>
+              <p className="flex items-center gap-1 text-[9px] text-zinc-500 dark:text-zinc-400">
+                <Clock className="h-2 w-2" /> {c.duration}
+                <span className="ml-auto flex items-center gap-0.5 text-violet-700 dark:text-violet-300">
+                  <Star className="h-2 w-2 fill-violet-500 text-violet-500" />
+                  {c.rating}
+                </span>
               </p>
             </div>
           </div>
@@ -530,18 +603,74 @@ function EcommerceMockup() {
 
       <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
         <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
-          <Truck className="h-3 w-3 text-rose-600" />
-          Livraison offerte dès 80 €
+          <CheckCircle2 className="h-3 w-3 text-violet-600" />
+          Accès à vie · Garantie 30 jours
         </span>
-        <span className="rounded-full bg-rose-600 px-2.5 py-1 text-[10px] font-medium text-white">
-          Voir la collection
+        <span className="rounded-full bg-violet-600 px-2.5 py-1 text-[10px] font-medium text-white">
+          Voir le catalogue
         </span>
       </div>
     </>
   );
 }
 
-function BeauteMockup() {
+function LensMockup() {
+  return (
+    <>
+      <SiteHeader
+        brand="Atelier Lens"
+        links={["Portfolio", "Offres", "Studio"]}
+        cta="Réserver"
+        accent="bg-neutral-900"
+        Icon={Camera}
+      />
+
+      <div className="shrink-0 bg-gradient-to-br from-neutral-50 to-stone-200/60 px-4 py-3 dark:from-white/5 dark:to-white/0">
+        <p className="text-[9px] font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+          Mariages · Portraits · Corporate
+        </p>
+        <p className="mt-0.5 font-serif text-[15px] font-semibold leading-tight">
+          L&apos;instant capturé, la mémoire intacte.
+        </p>
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <span className="flex items-center gap-1">
+            <Aperture className="h-2.5 w-2.5" /> 8 ans · 240 reportages
+          </span>
+        </div>
+      </div>
+
+      <div className="grid flex-1 grid-cols-4 gap-1.5 p-3">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div
+            key={i}
+            className={cn(
+              "aspect-square rounded-sm",
+              i % 3 === 0
+                ? "bg-gradient-to-br from-neutral-300 to-neutral-500 dark:from-neutral-600 dark:to-neutral-800"
+                : i % 2 === 0
+                ? "bg-gradient-to-br from-stone-300 to-stone-400 dark:from-stone-700 dark:to-stone-800"
+                : "bg-gradient-to-br from-zinc-300 to-zinc-500 dark:from-zinc-700 dark:to-zinc-800"
+            )}
+          >
+            <div className="h-full w-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.45),transparent_55%)]" />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-t border-black/5 px-4 py-2 dark:border-white/10">
+        <span className="flex items-center gap-1 text-[10px] text-zinc-600 dark:text-zinc-400">
+          <ImageIcon className="h-3 w-3 text-neutral-700" />
+          Booking ouvert · sept – déc
+        </span>
+        <span className="rounded-full bg-neutral-900 px-2.5 py-1 text-[10px] font-medium text-white dark:bg-white dark:text-neutral-900">
+          Demander un devis
+        </span>
+      </div>
+    </>
+  );
+}
+
+function StudioMockup() {
   const services = [
     { name: "Coupe + brushing", price: "45 €", duration: "45 min" },
     { name: "Coloration", price: "à partir de 90 €", duration: "1h30" },
