@@ -87,7 +87,9 @@ export function Dialog({
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
-            <div className="max-h-[90vh] overflow-y-auto">{children}</div>
+            <div className="max-h-[90vh] overflow-y-auto overflow-x-hidden">
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}
