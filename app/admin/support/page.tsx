@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatRelative } from "@/lib/format";
-import type { TicketStatus } from "@prisma/client";
+import type { Prisma, TicketStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -26,20 +26,53 @@ const LABELS: Record<TicketStatus, string> = {
   CLOSED: "Fermés",
 };
 
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+function parseDate(value: string | undefined, endOfDay = false) {
+  if (!value || !ISO_DATE.test(value)) return undefined;
+  const d = new Date(value + (endOfDay ? "T23:59:59.999" : "T00:00:00"));
+  return Number.isNaN(d.getTime()) ? undefined : d;
+}
+
+function buildHref(params: { status?: string; from?: string; to?: string }) {
+  const sp = new URLSearchParams();
+  if (params.status) sp.set("status", params.status);
+  if (params.from) sp.set("from", params.from);
+  if (params.to) sp.set("to", params.to);
+  const qs = sp.toString();
+  return qs ? `/admin/support?${qs}` : "/admin/support";
+}
+
 export default async function AdminSupportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; from?: string; to?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, from, to } = await searchParams;
+
+  const isAll = status === "ALL";
   const filterStatus = STATUSES.includes(status as TicketStatus)
     ? (status as TicketStatus)
     : undefined;
 
+  const fromDate = parseDate(from);
+  const toDate = parseDate(to, true);
+
+  const where: Prisma.SupportTicketWhereInput = {};
+  if (filterStatus) {
+    where.status = filterStatus;
+  } else if (!isAll) {
+    where.status = { in: ["OPEN", "WAITING_STAFF", "WAITING_CLIENT"] };
+  }
+  if (fromDate || toDate) {
+    where.createdAt = {
+      ...(fromDate ? { gte: fromDate } : {}),
+      ...(toDate ? { lte: toDate } : {}),
+    };
+  }
+
   const tickets = await prisma.supportTicket.findMany({
-    where: filterStatus
-      ? { status: filterStatus }
-      : { status: { in: ["OPEN", "WAITING_STAFF", "WAITING_CLIENT"] } },
+    where,
     orderBy: { updatedAt: "desc" },
     include: {
       author: { select: { name: true, email: true } },
@@ -55,6 +88,9 @@ export default async function AdminSupportPage({
     counts.map((c) => [c.status, c._count] as const),
   );
 
+  const currentStatusKey = isAll ? "ALL" : filterStatus ?? "";
+  const hasDateFilter = Boolean(fromDate || toDate);
+
   return (
     <div>
       <PageHeader
@@ -62,24 +98,93 @@ export default async function AdminSupportPage({
         description="Tickets de support soumis par les clients. Les personnalisations sont dans un onglet séparé."
       />
 
-      <div className="mb-6 flex flex-wrap gap-2">
-        <FilterPill label="En cours" href="/admin/support" active={!filterStatus} />
+      <div className="mb-4 flex flex-wrap gap-2">
+        <FilterPill
+          label="En cours"
+          href={buildHref({ from, to })}
+          active={!filterStatus && !isAll}
+        />
+        <FilterPill
+          label="Tous"
+          href={buildHref({ status: "ALL", from, to })}
+          active={isAll}
+        />
         {STATUSES.map((s) => (
           <FilterPill
             key={s}
             label={LABELS[s]}
             count={countMap[s]}
-            href={`/admin/support?status=${s}`}
+            href={buildHref({ status: s, from, to })}
             active={filterStatus === s}
           />
         ))}
       </div>
 
+      <form
+        method="get"
+        action="/admin/support"
+        className="mb-6 flex flex-wrap items-end gap-3 rounded-2xl border border-border/60 bg-muted/20 p-3"
+      >
+        {currentStatusKey ? (
+          <input type="hidden" name="status" value={currentStatusKey} />
+        ) : null}
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="from"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            Du
+          </label>
+          <input
+            id="from"
+            name="from"
+            type="date"
+            defaultValue={from ?? ""}
+            max={to || undefined}
+            className="h-9 rounded-xl border border-input bg-background px-3 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="to"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            Au
+          </label>
+          <input
+            id="to"
+            name="to"
+            type="date"
+            defaultValue={to ?? ""}
+            min={from || undefined}
+            className="h-9 rounded-xl border border-input bg-background px-3 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+        <button
+          type="submit"
+          className="h-9 rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+        >
+          Filtrer
+        </button>
+        {hasDateFilter ? (
+          <Link
+            href={buildHref({ status: currentStatusKey || undefined })}
+            className="inline-flex h-9 items-center rounded-full border border-border/60 px-4 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Réinitialiser les dates
+          </Link>
+        ) : null}
+      </form>
+
       {tickets.length === 0 ? (
         <EmptyState
           icon={LifeBuoy}
           title="Aucun ticket"
-          description="Les demandes de support des clients apparaîtront ici."
+          description={
+            hasDateFilter
+              ? "Aucun ticket ne correspond aux filtres sélectionnés."
+              : "Les demandes de support des clients apparaîtront ici."
+          }
         />
       ) : (
         <Card>
