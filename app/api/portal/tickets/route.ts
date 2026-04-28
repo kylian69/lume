@@ -3,6 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { logActivity } from "@/lib/accounts";
+import { sendEmail } from "@/lib/email/client";
+import { getAdminEmails } from "@/lib/email/recipients";
+import { ticketMessageToAdminsTemplate } from "@/lib/email/templates";
 
 const createSchema = z.object({
   subject: z.string().min(3, "Sujet trop court"),
@@ -49,6 +52,20 @@ export async function POST(req: Request) {
     entityId: ticket.id,
     action: "created",
   });
+
+  const adminEmails = await getAdminEmails();
+  if (adminEmails.length > 0) {
+    const tpl = ticketMessageToAdminsTemplate({
+      ticketId: ticket.id,
+      subject: ticket.subject,
+      isNewTicket: true,
+      content: d.content,
+      clientEmail: session.user.email,
+      clientName: session.user.name,
+    });
+    await sendEmail({ to: adminEmails, ...tpl, replyTo: session.user.email });
+  }
+
   return NextResponse.json({ ok: true, ticketId: ticket.id });
 }
 

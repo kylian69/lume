@@ -3,6 +3,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { logActivity } from "@/lib/accounts";
+import { sendEmail } from "@/lib/email/client";
+import { ticketMessageToClientTemplate } from "@/lib/email/templates";
 
 const schema = z.object({
   content: z.string().min(1),
@@ -45,5 +47,25 @@ export async function POST(
     entityId: id,
     action: parsed.data.isInternal ? "internal_note" : "replied",
   });
+
+  if (!parsed.data.isInternal) {
+    const ticket = await prisma.supportTicket.findUnique({
+      where: { id },
+      select: {
+        subject: true,
+        author: { select: { email: true } },
+      },
+    });
+    if (ticket?.author?.email) {
+      const tpl = ticketMessageToClientTemplate({
+        ticketId: id,
+        subject: ticket.subject,
+        content: parsed.data.content,
+        authorName: session.user.name,
+      });
+      await sendEmail({ to: ticket.author.email, ...tpl });
+    }
+  }
+
   return NextResponse.json({ ok: true, message });
 }

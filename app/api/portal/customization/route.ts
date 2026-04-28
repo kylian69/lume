@@ -3,6 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { logActivity } from "@/lib/accounts";
+import { sendEmail } from "@/lib/email/client";
+import { getAdminEmails } from "@/lib/email/recipients";
+import { customizationCreatedTemplate } from "@/lib/email/templates";
 
 const schema = z.object({
   title: z.string().min(3),
@@ -41,5 +44,19 @@ export async function POST(req: Request) {
     entityId: request.id,
     action: "created",
   });
+
+  const adminEmails = await getAdminEmails();
+  if (adminEmails.length > 0) {
+    const tpl = customizationCreatedTemplate({
+      requestId: request.id,
+      title: request.title,
+      description: request.description,
+      priority: request.priority,
+      clientEmail: session.user.email,
+      clientName: session.user.name,
+    });
+    await sendEmail({ to: adminEmails, ...tpl });
+  }
+
   return NextResponse.json({ ok: true, id: request.id });
 }
