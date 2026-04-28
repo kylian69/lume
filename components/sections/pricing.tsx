@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -16,17 +16,20 @@ const SUB_MODES: {
   {
     id: "none",
     label: "Achat unique",
-    description: "Vous recevez le site. Aucun abonnement.",
+    description:
+      "Vous recevez le site, sans aucun abonnement. À vous de l'héberger et de le gérer en autonomie.",
   },
   {
     id: "light",
-    label: "Light",
-    description: "Hébergement & nom de domaine inclus.",
+    label: "+ Abonnement Light",
+    description:
+      "On s'occupe de l'hébergement, du nom de domaine et du certificat SSL. Vous gardez la main sur le contenu.",
   },
   {
     id: "complete",
-    label: "Complet",
-    description: "Hébergement, mises à jour et support.",
+    label: "+ Abonnement Complet",
+    description:
+      "Tout ce qu'inclut Light, plus les mises à jour, le suivi de performance et le support.",
   },
 ];
 
@@ -120,10 +123,75 @@ const PLANS: Plan[] = [
   },
 ];
 
-function featuresFor(plan: Plan, mode: SubMode) {
-  if (mode === "none") return plan.baseFeatures;
-  if (mode === "light") return [...plan.baseFeatures, ...plan.lightExtras];
-  return [...plan.baseFeatures, ...plan.lightExtras, ...plan.completeExtras];
+function FeatureGroup({
+  title,
+  meta,
+  features,
+  active,
+  featured,
+}: {
+  title: string;
+  meta?: string;
+  features: string[];
+  active: boolean;
+  featured?: boolean;
+}) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-3">
+        <h4
+          className={cn(
+            "text-[11px] font-semibold uppercase tracking-wider",
+            active ? "text-foreground" : "text-muted-foreground"
+          )}
+        >
+          {title}
+        </h4>
+        {meta && (
+          <span
+            className={cn(
+              "text-[11px] font-medium tabular-nums",
+              active ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            {meta}
+          </span>
+        )}
+      </div>
+      <ul className="mt-3 space-y-2.5 text-sm">
+        {features.map((feature) => (
+          <li
+            key={feature}
+            className={cn(
+              "flex items-start gap-3",
+              !active && "text-muted-foreground"
+            )}
+          >
+            <span
+              className={cn(
+                "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                active
+                  ? featured
+                    ? "bg-primary/15 text-primary"
+                    : "bg-muted text-foreground/80"
+                  : "bg-muted/40 text-muted-foreground/70"
+              )}
+              aria-hidden
+            >
+              {active ? (
+                <Check className="h-3 w-3" />
+              ) : (
+                <Plus className="h-3 w-3" />
+              )}
+            </span>
+            <span className={active ? "text-foreground/90" : undefined}>
+              {feature}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 export function Pricing() {
@@ -142,11 +210,26 @@ export function Pricing() {
             id="pricing-title"
             className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
           >
-            Trois offres, un abonnement à la carte
+            Trois offres, l&apos;abonnement en option
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Payez votre site une seule fois. Ajoutez, si vous le souhaitez,
-            l&apos;hébergement ou un suivi complet. Résiliable à tout moment.
+            Vous payez votre site une seule fois.{" "}
+            <span className="font-medium text-foreground">
+              L&apos;abonnement est totalement facultatif
+            </span>{" "}
+            : recevez votre site, hébergez-le où vous voulez et gérez-le en
+            autonomie — ou confiez-nous l&apos;hébergement et le suivi, dès
+            maintenant ou plus tard. Résiliable à tout moment.
+          </p>
+        </div>
+
+        <div className="mx-auto mt-8 max-w-3xl rounded-2xl border border-border/60 bg-muted/30 p-5 text-sm sm:p-6">
+          <p className="text-foreground/90">
+            <span className="font-semibold text-foreground">Bon à savoir.</span>{" "}
+            Quel que soit le forfait, le site vous appartient une fois payé.
+            L&apos;abonnement n&apos;ajoute pas de fonctionnalités au site
+            lui-même : il prend en charge l&apos;hébergement, l&apos;entretien
+            et le support pour que vous n&apos;ayez rien à gérer.
           </p>
         </div>
 
@@ -185,14 +268,15 @@ export function Pricing() {
           </div>
         </div>
 
-        <p className="mt-3 text-center text-xs text-muted-foreground">
+        <p className="mx-auto mt-3 max-w-xl text-center text-xs text-muted-foreground">
           {SUB_MODES.find((m) => m.id === mode)?.description}
         </p>
 
         <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-3">
           {PLANS.map((plan, i) => {
-            const features = featuresFor(plan, mode);
             const monthly = plan.monthly[mode];
+            const lightActive = mode === "light" || mode === "complete";
+            const completeActive = mode === "complete";
 
             return (
               <motion.article
@@ -228,41 +312,55 @@ export function Pricing() {
                     {plan.setup}€
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    de mise en service
+                    paiement unique
                   </span>
                 </div>
 
                 <div className="mt-2 min-h-[28px] flex items-baseline gap-1 text-muted-foreground">
                   {monthly === 0 ? (
-                    <span className="text-sm">Sans abonnement · paiement unique</span>
+                    <span className="text-sm">
+                      Sans abonnement · vous gérez le site
+                    </span>
                   ) : (
                     <>
-                      <span className="text-sm">puis</span>
+                      <span className="text-sm">+</span>
                       <span className="text-xl font-semibold text-foreground">
                         {monthly}€
                       </span>
-                      <span className="text-sm">/ mois</span>
+                      <span className="text-sm">/ mois (facultatif)</span>
                     </>
                   )}
                 </div>
 
-                <ul className="mt-8 space-y-3 text-sm">
-                  {features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <span
-                        className={cn(
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
-                          plan.featured
-                            ? "bg-primary/15 text-primary"
-                            : "bg-muted text-foreground/80"
-                        )}
-                      >
-                        <Check className="h-3 w-3" aria-hidden />
-                      </span>
-                      <span className="text-foreground/90">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-8 space-y-6">
+                  <FeatureGroup
+                    title="Inclus dans l'achat du site"
+                    meta="paiement unique"
+                    features={plan.baseFeatures}
+                    active
+                    featured={plan.featured}
+                  />
+
+                  <div className="border-t border-border/50 pt-6">
+                    <FeatureGroup
+                      title="+ Abonnement Light"
+                      meta={`${plan.monthly.light}€/mois`}
+                      features={plan.lightExtras}
+                      active={lightActive}
+                      featured={plan.featured}
+                    />
+                  </div>
+
+                  <div className="border-t border-border/50 pt-6">
+                    <FeatureGroup
+                      title="+ Abonnement Complet"
+                      meta={`${plan.monthly.complete}€/mois`}
+                      features={plan.completeExtras}
+                      active={completeActive}
+                      featured={plan.featured}
+                    />
+                  </div>
+                </div>
 
                 <div className="mt-8">
                   <Button
@@ -282,9 +380,10 @@ export function Pricing() {
         </div>
 
         <p className="mx-auto mt-10 max-w-2xl text-center text-xs text-muted-foreground">
-          L&apos;abonnement est totalement facultatif : vous pouvez acheter votre site une
-          seule fois et le conserver. Vous pourrez activer ou résilier un abonnement
-          à tout moment depuis votre espace client.
+          Vous pouvez démarrer en achat unique puis activer un abonnement plus
+          tard depuis votre espace client, ou le résilier quand vous le
+          souhaitez. Sans abonnement, vous récupérez les sources et hébergez le
+          site où bon vous semble.
         </p>
       </div>
     </section>
