@@ -16,7 +16,7 @@
 - recevoir des notifications par email 
     - quand il y a une nouvelle demande de modif 
     - quand il y a une nouvelle commande 
-    - quand il y a un nouveau commentaire (client et admin)
+    - quand il y a un nouveau commentaire dans le support (client et admin)
     - quand il y'a un nouveau prospect
 
 - dans la section "tarifs" ajouter un peu plus de clarter sur les formules
