@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatRelative } from "@/lib/format";
+import { formatTicketNumber } from "@/lib/ticket-number";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,9 @@ export default async function PortalSupportPage() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {formatTicketNumber(t.number)}
+                      </span>
                       <p className="truncate text-sm font-semibold">
                         {t.subject}
                       </p>

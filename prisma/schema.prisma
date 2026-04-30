@@ -311,6 +311,7 @@ enum TicketCategory {
 
 model SupportTicket {
   id          String         @id @default(cuid())
+  number      Int?           @unique
   authorId    String
   author      User           @relation("TicketAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   projectId   String?
@@ -360,4 +361,13 @@ model ActivityLog {
 
   @@index([entityType, entityId])
   @@index([createdAt])
+}
+
+// ──────────────────────────────────────────────────────────────
+// Compteurs (séquences atomiques)
+// ──────────────────────────────────────────────────────────────
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
 }

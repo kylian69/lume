@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { TicketThread } from "@/components/shared/ticket-thread";
+import { formatTicketNumber } from "@/lib/ticket-number";
 
 export const dynamic = "force-dynamic";
 
@@ -33,11 +34,11 @@ export default async function PortalTicketPage({
   return (
     <div>
       <PageHeader
-        title="Ticket support"
+        title={`Ticket ${formatTicketNumber(ticket.number)}`}
         breadcrumbs={[
           { label: "Espace", href: "/portal" },
           { label: "Support", href: "/portal/support" },
-          { label: ticket.subject },
+          { label: `${formatTicketNumber(ticket.number)} · ${ticket.subject}` },
         ]}
         actions={
           <Button variant="outline" size="sm" asChild>

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TicketThread } from "@/components/shared/ticket-thread";
+import { formatTicketNumber } from "@/lib/ticket-number";
 
 export const dynamic = "force-dynamic";
 
@@ -34,11 +35,11 @@ export default async function AdminTicketPage({
   return (
     <div>
       <PageHeader
-        title="Ticket support"
+        title={`Ticket ${formatTicketNumber(ticket.number)}`}
         breadcrumbs={[
           { label: "Admin", href: "/admin" },
           { label: "Support", href: "/admin/support" },
-          { label: ticket.subject },
+          { label: `${formatTicketNumber(ticket.number)} · ${ticket.subject}` },
         ]}
         actions={
           <Button variant="outline" size="sm" asChild>
