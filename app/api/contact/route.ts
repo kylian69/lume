@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { ensureClientUser, logActivity } from "@/lib/accounts";
+import { sendEmail } from "@/lib/email/client";
+import { getAdminEmails } from "@/lib/email/recipients";
+import {
+  prospectCreatedTemplate,
+  quoteRequestedTemplate,
+} from "@/lib/email/templates";
 
 const schema = z.object({
   companyName: z.string().min(1),
@@ -40,6 +46,7 @@ export async function POST(req: Request) {
         ],
       },
     });
+    let isNewProspect = false;
     if (!prospect) {
       prospect = await prisma.prospect.create({
         data: {
@@ -52,6 +59,7 @@ export async function POST(req: Request) {
           source: "QUOTE_FORM",
         },
       });
+      isNewProspect = true;
     }
 
     const quote = await prisma.quoteRequest.create({
@@ -72,6 +80,30 @@ export async function POST(req: Request) {
       action: "quote_requested",
       metadata: { quoteId: quote.id, planType: d.planType },
     });
+
+    const adminEmails = await getAdminEmails();
+    if (adminEmails.length > 0) {
+      if (isNewProspect) {
+        const tpl = prospectCreatedTemplate({
+          id: prospect.id,
+          companyName: prospect.companyName,
+          email: prospect.email,
+          phone: prospect.phone,
+          source: "QUOTE_FORM",
+        });
+        await sendEmail({ to: adminEmails, ...tpl });
+      }
+      const tpl = quoteRequestedTemplate({
+        prospectId: prospect.id,
+        companyName: prospect.companyName,
+        email: prospect.email,
+        planType: d.planType ?? null,
+        budgetCents: d.budget ?? null,
+        timeline: d.timeline || null,
+        details: d.details || null,
+      });
+      await sendEmail({ to: adminEmails, ...tpl });
+    }
 
     return NextResponse.json({
       ok: true,

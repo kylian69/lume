@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { ensureClientUser, logActivity } from "@/lib/accounts";
+import { sendEmail } from "@/lib/email/client";
+import { getAdminEmails } from "@/lib/email/recipients";
+import { prospectCreatedTemplate } from "@/lib/email/templates";
 
 const schema = z.object({
   metier: z.string().optional().default(""),
@@ -54,6 +57,7 @@ export async function POST(req: Request) {
       include: { questionnaire: true },
     });
 
+    let isNewProspect = false;
     if (!prospect) {
       prospect = await prisma.prospect.create({
         data: {
@@ -67,6 +71,7 @@ export async function POST(req: Request) {
         },
         include: { questionnaire: true },
       });
+      isNewProspect = true;
       await logActivity({
         entityType: "prospect",
         entityId: prospect.id,
@@ -116,6 +121,20 @@ export async function POST(req: Request) {
       entityId: prospect.id,
       action: "questionnaire_submitted",
     });
+
+    if (isNewProspect) {
+      const adminEmails = await getAdminEmails();
+      if (adminEmails.length > 0) {
+        const tpl = prospectCreatedTemplate({
+          id: prospect.id,
+          companyName: prospect.companyName,
+          email: prospect.email,
+          phone: prospect.phone,
+          source: "QUESTIONNAIRE",
+        });
+        await sendEmail({ to: adminEmails, ...tpl });
+      }
+    }
 
     return NextResponse.json({
       ok: true,
