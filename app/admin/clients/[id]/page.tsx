@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatDate, formatDateTime, formatEUR } from "@/lib/format";
+import { ActivityTimeline } from "@/components/admin/activity-timeline";
+import { getClientActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,8 @@ export default async function ClientDetailPage({
     },
   });
   if (!client) notFound();
+
+  const activity = await getClientActivity(client.id);
 
   return (
     <div>
@@ -133,6 +137,8 @@ export default async function ClientDetailPage({
               )}
             </CardContent>
           </Card>
+
+          <ActivityTimeline entries={activity} />
 
           <Card>
             <CardHeader>

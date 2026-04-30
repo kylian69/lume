@@ -21,6 +21,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { ActivityTimeline } from "@/components/admin/activity-timeline";
+import { getProspectActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +46,8 @@ export default async function ProspectDetailPage({
   });
 
   if (!prospect) notFound();
+
+  const activity = await getProspectActivity(prospect.id);
 
   let objectifs: string[] = [];
   let fonctionnalites: string[] = [];
@@ -229,6 +233,8 @@ export default async function ProspectDetailPage({
               </CardContent>
             </Card>
           )}
+
+          <ActivityTimeline entries={activity} />
 
           {prospect.quoteRequests.length > 0 && (
             <Card>

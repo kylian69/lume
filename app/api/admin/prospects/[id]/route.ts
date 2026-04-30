@@ -91,6 +91,19 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { id } = await params;
+  const existing = await prisma.prospect.findUnique({
+    where: { id },
+    select: { companyName: true, email: true },
+  });
   await prisma.prospect.delete({ where: { id } });
+  if (existing) {
+    await logActivity({
+      userId: session.user.id,
+      entityType: "prospect",
+      entityId: id,
+      action: "deleted",
+      metadata: existing,
+    });
+  }
   return NextResponse.json({ ok: true });
 }
