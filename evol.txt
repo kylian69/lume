@@ -19,6 +19,20 @@
     - quand il y a un nouveau commentaire dans le support (client et admin)
     - quand il y'a un nouveau prospect
 
+- espace client/admin
+    - pouvoir changer son email (avec un système de verification)
+    - pouvoir changer son mot de passe (avec un système de verification)
+    - pouvoir changer son nom 
+    - pouvoir changer son prenom
+    - pouvoir changer son avatar
+    - pouvoir changer son mot de passe (avec un système de verification)
+    - pouvoir mettre en place le 2FA
+
+- espace admin dans la section prospects
+    - lorsque je clique sur un prospect, pouvoir changer les informations du prospect (entreprise, email, téléphone)
+    - pouvoir convertir les prospects en clients
+    - pouvoir supprimer les prospects
+
 - dans la section "tarifs" ajouter un peu plus de clarter sur les formules
     - tout d'abord bien préciser que les abonnements sont facultatifs (il est possible de seulement acheter un site et qu'ensuite l'utilisateur puisse le gérer en autonomie, l'héberger lui même ou souscrire à un abonnement plus tard)
     - donc le détail des offres faire apparaitre ce qui est compris avec et sans l'abonnement (mettre en évidence ce que l'abonnement apporte)
