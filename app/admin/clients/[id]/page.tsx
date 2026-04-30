@@ -138,8 +138,6 @@ export default async function ClientDetailPage({
             </CardContent>
           </Card>
 
-          <ActivityTimeline entries={activity} />
-
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
@@ -175,6 +173,8 @@ export default async function ClientDetailPage({
               )}
             </CardContent>
           </Card>
+
+          <ActivityTimeline entries={activity} />
         </div>
 
         <div className="space-y-6">

@@ -234,8 +234,6 @@ export default async function ProspectDetailPage({
             </Card>
           )}
 
-          <ActivityTimeline entries={activity} />
-
           {prospect.quoteRequests.length > 0 && (
             <Card>
               <CardHeader>
@@ -268,6 +266,8 @@ export default async function ProspectDetailPage({
               </CardContent>
             </Card>
           )}
+
+          <ActivityTimeline entries={activity} />
         </div>
 
         {/* Colonne droite : actions + notes */}

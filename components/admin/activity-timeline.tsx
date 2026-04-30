@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   History,
   UserPlus,
@@ -14,8 +17,8 @@ import {
   LifeBuoy,
   Briefcase,
   Activity,
+  ChevronDown,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime } from "@/lib/format";
 import type { ActivityEntry } from "@/lib/activity";
 
@@ -130,52 +133,70 @@ export function ActivityTimeline({
   entries: ActivityEntry[];
   title?: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const count = entries.length;
+  const lastDate = entries[0]?.createdAt;
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <History className="h-4 w-4 text-primary" />
-          {title}
-          <span className="ml-auto text-xs font-normal text-muted-foreground">
-            {entries.length} action{entries.length > 1 ? "s" : ""}
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {entries.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Aucune action enregistrée pour l'instant.
-          </p>
-        ) : (
-          <ol className="relative space-y-4 border-l border-border/60 pl-6">
-            {entries.map((e) => {
-              const { icon: Icon, label } = describe(e.action, e.entityType);
-              const entityLabel = ENTITY_LABELS[e.entityType] ?? e.entityType;
-              const actor = e.user
-                ? e.user.name || e.user.email
-                : "Système / public";
-              return (
-                <li key={e.id} className="relative">
-                  <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground">
-                    <Icon className="h-3 w-3" />
-                  </span>
-                  <div className="flex flex-wrap items-baseline gap-x-2">
-                    <p className="text-sm font-medium">{label}</p>
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {entityLabel}
+    <div className="rounded-xl border border-border/50 bg-background">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 px-4 py-2.5 text-left transition-colors hover:bg-muted/40"
+      >
+        <History className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-sm font-medium">{title}</span>
+        <span className="text-xs text-muted-foreground">
+          {count === 0
+            ? "aucune action"
+            : `${count} action${count > 1 ? "s" : ""}${
+                lastDate ? ` · dernière le ${formatDateTime(lastDate)}` : ""
+              }`}
+        </span>
+        <ChevronDown
+          className={`ml-auto h-4 w-4 text-muted-foreground transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      {open && (
+        <div className="border-t border-border/50 px-4 py-4">
+          {count === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Aucune action enregistrée pour l'instant.
+            </p>
+          ) : (
+            <ol className="relative space-y-4 border-l border-border/60 pl-6">
+              {entries.map((e) => {
+                const { icon: Icon, label } = describe(e.action, e.entityType);
+                const entityLabel = ENTITY_LABELS[e.entityType] ?? e.entityType;
+                const actor = e.user
+                  ? e.user.name || e.user.email
+                  : "Système / public";
+                return (
+                  <li key={e.id} className="relative">
+                    <span className="absolute -left-[33px] flex h-6 w-6 items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground">
+                      <Icon className="h-3 w-3" />
                     </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDateTime(e.createdAt)} · par{" "}
-                    <span className="font-medium text-foreground">{actor}</span>
-                  </p>
-                  {renderMetadata(e.action, e.metadata)}
-                </li>
-              );
-            })}
-          </ol>
-        )}
-      </CardContent>
-    </Card>
+                    <div className="flex flex-wrap items-baseline gap-x-2">
+                      <p className="text-sm font-medium">{label}</p>
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {entityLabel}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDateTime(e.createdAt)} · par{" "}
+                      <span className="font-medium text-foreground">{actor}</span>
+                    </p>
+                    {renderMetadata(e.action, e.metadata)}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
