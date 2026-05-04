@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Mail, Phone, Globe, Sparkles, LifeBuoy } from "lucide-react";
+import { ArrowLeft, Calendar, Globe, Sparkles, LifeBuoy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { formatDate, formatDateTime, formatEUR } from "@/lib/format";
 import { ActivityTimeline } from "@/components/admin/activity-timeline";
 import { getClientActivity } from "@/lib/activity";
+import { ClientContactEditor, ClientNotes } from "@/components/admin/client-detail";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,10 @@ export default async function ClientDetailPage({
         take: 10,
       },
       prospect: true,
+      clientNotes: {
+        orderBy: { createdAt: "desc" },
+        include: { author: { select: { name: true, email: true } } },
+      },
     },
   });
   if (!client) notFound();
@@ -178,31 +183,20 @@ export default async function ClientDetailPage({
         </div>
 
         <div className="space-y-6">
+          <ClientContactEditor
+            clientId={client.id}
+            initial={{
+              name: client.name,
+              email: client.email,
+              phone: client.phone,
+            }}
+          />
+
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Coordonnées</CardTitle>
+              <CardTitle className="text-base">Informations</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <a
-                  href={`mailto:${client.email}`}
-                  className="text-primary hover:underline"
-                >
-                  {client.email}
-                </a>
-              </div>
-              {client.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={`tel:${client.phone}`}
-                    className="text-primary hover:underline"
-                  >
-                    {client.phone}
-                  </a>
-                </div>
-              )}
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 Client depuis le {formatDate(client.createdAt)}
@@ -217,6 +211,17 @@ export default async function ClientDetailPage({
               )}
             </CardContent>
           </Card>
+
+          <ClientNotes
+            clientId={client.id}
+            initialNotes={client.clientNotes.map((n) => ({
+              id: n.id,
+              content: n.content,
+              createdAt: n.createdAt,
+              updatedAt: n.updatedAt,
+              author: n.author,
+            }))}
+          />
 
           <Card>
             <CardHeader>

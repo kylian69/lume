@@ -37,6 +37,8 @@ model User {
   ticketMessages  TicketMessage[]
   customizations  CustomizationRequest[]
   notesAuthored   ProspectNote[]        @relation("NoteAuthor")
+  clientNotes     ClientNote[]          @relation("ClientNotesOnUser")
+  clientNotesAuthored ClientNote[]      @relation("ClientNoteAuthor")
   activities      ActivityLog[]
 }
 
@@ -100,8 +102,22 @@ model ProspectNote {
   author     User?    @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   content    String
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([prospectId])
+}
+
+model ClientNote {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    User     @relation("ClientNotesOnUser", fields: [clientId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation("ClientNoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
 }
 
 // Réponse complète au questionnaire multi-étapes
