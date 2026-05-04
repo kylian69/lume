@@ -6,6 +6,7 @@ import { logActivity } from "@/lib/accounts";
 import { sendEmail } from "@/lib/email/client";
 import { getAdminEmails } from "@/lib/email/recipients";
 import { ticketMessageToAdminsTemplate } from "@/lib/email/templates";
+import { nextTicketNumber } from "@/lib/ticket-number";
 
 const createSchema = z.object({
   subject: z.string().min(3, "Sujet trop court"),
@@ -30,8 +31,10 @@ export async function POST(req: Request) {
     );
   }
   const d = parsed.data;
+  const number = await nextTicketNumber();
   const ticket = await prisma.supportTicket.create({
     data: {
+      number,
       authorId: session.user.id,
       subject: d.subject,
       category: d.category,

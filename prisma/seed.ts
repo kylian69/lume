@@ -167,6 +167,37 @@ async function main() {
     console.log(`✔ Ticket démo : ${ticket.id}`);
   }
 
+  // Backfill des numéros pour les tickets existants (ordre de création)
+  const unnumbered = await prisma.supportTicket.findMany({
+    where: { number: null },
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
+  });
+  if (unnumbered.length > 0) {
+    const maxBefore = await prisma.supportTicket.aggregate({
+      where: { number: { not: null } },
+      _max: { number: true },
+    });
+    let next = (maxBefore._max.number ?? 0) + 1;
+    for (const t of unnumbered) {
+      await prisma.supportTicket.update({
+        where: { id: t.id },
+        data: { number: next++ },
+      });
+    }
+  }
+
+  // Synchronise le compteur de tickets sur le max existant
+  const maxTicket = await prisma.supportTicket.aggregate({
+    _max: { number: true },
+  });
+  const maxValue = maxTicket._max.number ?? 0;
+  await prisma.counter.upsert({
+    where: { key: "supportTicket" },
+    create: { key: "supportTicket", value: maxValue },
+    update: { value: maxValue },
+  });
+
   // Une demande de personnalisation
   const hasDemoCustom = await prisma.customizationRequest.findFirst({
     where: { userId: client.id },
