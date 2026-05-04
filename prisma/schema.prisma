@@ -102,7 +102,7 @@ model ProspectNote {
   author     User?    @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   content    String
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@index([prospectId])
 }
