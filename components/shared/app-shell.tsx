@@ -81,11 +81,11 @@ export function AppShell({
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 w-72 transform border-r border-border/60 bg-background transition-transform md:static md:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 w-72 transform border-r border-border/60 bg-background transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
             open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}
         >
-          <div className="flex h-full flex-col">
+          <div className="flex h-full flex-col overflow-y-auto">
             <div className="hidden items-center gap-2 px-6 py-6 md:flex">
               <Link href="/" className="inline-flex items-center gap-2">
                 <Logo />
