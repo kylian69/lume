@@ -9,10 +9,6 @@
 - dans l'espace admin mettre en place les modifs et la possibilité de les valider ou de les refuser
     - 
 
-- dans l'espace admin ajouter un historique complet pour les prospects et clients
-    - pouvoir retracer toutes les actions et interactions
-    - retracer la date et l'heure de chaque action (si possible la personne également)
-
 - recevoir des notifications par email 
     - quand il y a une nouvelle demande de modif 
     - quand il y a une nouvelle commande 
