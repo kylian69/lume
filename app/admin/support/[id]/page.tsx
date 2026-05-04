@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, User } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,7 @@ export default async function AdminTicketPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await getSession();
   const ticket = await prisma.supportTicket.findUnique({
     where: { id },
     include: {
@@ -26,6 +28,9 @@ export default async function AdminTicketPage({
         orderBy: { createdAt: "asc" },
         include: {
           author: { select: { name: true, email: true, role: true } },
+          attachments: {
+            select: { id: true, filename: true, mimeType: true, size: true },
+          },
         },
       },
     },
@@ -63,14 +68,19 @@ export default async function AdminTicketPage({
               content: m.content,
               isInternal: m.isInternal,
               createdAt: m.createdAt,
+              editedAt: m.editedAt,
+              deletedAt: m.deletedAt,
+              authorId: m.authorId,
               author: {
                 name: m.author.name,
                 email: m.author.email,
                 role: m.author.role,
               },
+              attachments: m.attachments,
             }))}
             scope="admin"
             allowStatusChange
+            currentUserId={session!.user.id}
           />
         </div>
         <div>

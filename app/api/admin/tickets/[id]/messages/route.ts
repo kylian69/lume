@@ -6,9 +6,16 @@ import { logActivity } from "@/lib/accounts";
 import { sendEmail } from "@/lib/email/client";
 import { ticketMessageToClientTemplate } from "@/lib/email/templates";
 
+const attachmentInput = z.object({
+  filename: z.string().min(1),
+  mimeType: z.string().min(1),
+  size: z.number().int().nonnegative(),
+  storageKey: z.string().min(1),
+});
 const schema = z.object({
   content: z.string().min(1),
   isInternal: z.boolean().optional().default(false),
+  attachments: z.array(attachmentInput).optional(),
 });
 
 export async function POST(
@@ -30,6 +37,18 @@ export async function POST(
       authorId: session.user.id,
       content: parsed.data.content,
       isInternal: parsed.data.isInternal,
+      ...(parsed.data.attachments?.length
+        ? {
+            attachments: {
+              create: parsed.data.attachments.map((a) => ({
+                filename: a.filename,
+                mimeType: a.mimeType,
+                size: a.size,
+                storageKey: a.storageKey,
+              })),
+            },
+          }
+        : {}),
     },
   });
   if (!parsed.data.isInternal) {

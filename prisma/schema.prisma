@@ -341,8 +341,25 @@ model TicketMessage {
   content     String
   isInternal  Boolean       @default(false) // note interne invisible au client
   createdAt   DateTime      @default(now())
+  editedAt    DateTime?
+  deletedAt   DateTime?
+  deletedById String?
+  attachments TicketAttachment[]
 
   @@index([ticketId])
+}
+
+model TicketAttachment {
+  id         String        @id @default(cuid())
+  messageId  String
+  message    TicketMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  filename   String
+  mimeType   String
+  size       Int
+  storageKey String
+  createdAt  DateTime      @default(now())
+
+  @@index([messageId])
 }
 
 // ──────────────────────────────────────────────────────────────

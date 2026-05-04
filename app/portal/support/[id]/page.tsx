@@ -25,6 +25,14 @@ export default async function PortalTicketPage({
         orderBy: { createdAt: "asc" },
         include: {
           author: { select: { name: true, email: true, role: true } },
+          attachments: {
+            select: {
+              id: true,
+              filename: true,
+              mimeType: true,
+              size: true,
+            },
+          },
         },
       },
     },
@@ -58,13 +66,18 @@ export default async function PortalTicketPage({
           id: m.id,
           content: m.content,
           createdAt: m.createdAt,
+          editedAt: m.editedAt,
+          deletedAt: m.deletedAt,
+          authorId: m.authorId,
           author: {
             name: m.author.name,
             email: m.author.email,
             role: m.author.role,
           },
+          attachments: m.attachments,
         }))}
         scope="portal"
+        currentUserId={session!.user.id}
       />
     </div>
   );
