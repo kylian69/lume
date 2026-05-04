@@ -21,7 +21,6 @@
     - pouvoir changer son nom 
     - pouvoir changer son prenom
     - pouvoir changer son avatar
-    - pouvoir changer son mot de passe (avec un système de verification)
     - pouvoir mettre en place le 2FA
 
 - espace admin dans la section équipe ou autre nouvelle section
