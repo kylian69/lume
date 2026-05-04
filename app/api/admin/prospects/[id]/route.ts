@@ -18,8 +18,9 @@ const patchSchema = z.object({
     ])
     .optional(),
   estimatedValue: z.number().int().nullable().optional(),
-  companyName: z.string().optional(),
+  companyName: z.string().min(1).optional(),
   contactName: z.string().nullable().optional(),
+  email: z.string().email().optional(),
   phone: z.string().nullable().optional(),
   note: z.string().optional(),
 });
@@ -44,6 +45,7 @@ export async function PATCH(
 
   const { note, ...rest } = parsed.data;
   const updates: Record<string, unknown> = { ...rest };
+  if (rest.email) updates.email = rest.email.toLowerCase().trim();
   if (rest.status && rest.status !== existing.status) {
     updates.stageChangedAt = new Date();
   }
@@ -60,6 +62,22 @@ export async function PATCH(
       entityId: id,
       action: "status_changed",
       metadata: { from: existing.status, to: rest.status },
+    });
+  }
+
+  const infoChanged: Record<string, unknown> = {};
+  for (const key of ["companyName", "contactName", "email", "phone"] as const) {
+    if (rest[key] !== undefined && rest[key] !== existing[key]) {
+      infoChanged[key] = { from: existing[key], to: rest[key] };
+    }
+  }
+  if (Object.keys(infoChanged).length > 0) {
+    await logActivity({
+      userId: session.user.id,
+      entityType: "prospect",
+      entityId: id,
+      action: "info_updated",
+      metadata: infoChanged,
     });
   }
 

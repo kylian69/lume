@@ -21,26 +21,13 @@
     - pouvoir changer son nom 
     - pouvoir changer son prenom
     - pouvoir changer son avatar
-    - pouvoir changer son mot de passe (avec un système de verification)
     - pouvoir mettre en place le 2FA
-
-- espace admin dans la section prospects
-    - lorsque je clique sur un prospect, pouvoir changer les informations du prospect (entreprise, email, téléphone)
-    - pouvoir convertir les prospects en clients
-    - pouvoir supprimer les prospects
-
-- espace admin dans la section support 
-    - ajouter un numéro de ticket unique pour chaque ticket (quelque chose d'intuitif et par incrémentation, pour pouvoir facilement faire référence à un ticket)
-    - dans la discussion des tickets de support
-        - pouvoir supprimer un message 
-        - pouvoir modifier un message
-        - ajouter un système d'écriture plus poussé (markdown, possibilité de mettre des images, des pièces jointes, police gras, police italique, couleur, taille, etc.)
 
 - espace admin dans la section équipe ou autre nouvelle section
     - pouvoir créer des utilisateur manuellement
     - gérer les utilisateurs (changer les informations, le rôle, les droits, etc.)
     - supprimer des utilisateurs
-    - pouvoir envoyer des invitations aux utilisateurs (par email)
+    - pouvoir envoyer des invitations aux utilisateurs (par email par exemple ou autre)
 
 - revoir le nom de l'application car Lume n'est pas disponible, le nom de domaine est déjà pris en plus, il faut donc trouver autre, dès qu'on aura choisi il faudra donc appliquer la modif sur toute l'application
 

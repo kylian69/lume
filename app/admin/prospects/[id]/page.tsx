@@ -2,8 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Mail,
-  Phone,
-  Building,
   Calendar,
   Palette,
   Target,
@@ -16,6 +14,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import {
   ProspectStatusEditor,
   ProspectNotes,
+  ProspectContactEditor,
+  ProspectActions,
 } from "@/components/admin/prospect-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -81,32 +81,21 @@ export default async function ProspectDetailPage({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Colonne gauche : détails */}
         <div className="space-y-6 lg:col-span-2">
+          <ProspectContactEditor
+            prospectId={prospect.id}
+            initial={{
+              companyName: prospect.companyName,
+              contactName: prospect.contactName,
+              email: prospect.email,
+              phone: prospect.phone,
+            }}
+          />
+
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Coordonnées</CardTitle>
+              <CardTitle className="text-base">Informations</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <InfoLine icon={Building} label="Entreprise">
-                {prospect.companyName}
-              </InfoLine>
-              <InfoLine icon={Mail} label="Email">
-                <a
-                  href={`mailto:${prospect.email}`}
-                  className="text-primary hover:underline"
-                >
-                  {prospect.email}
-                </a>
-              </InfoLine>
-              {prospect.phone && (
-                <InfoLine icon={Phone} label="Téléphone">
-                  <a
-                    href={`tel:${prospect.phone}`}
-                    className="text-primary hover:underline"
-                  >
-                    {prospect.phone}
-                  </a>
-                </InfoLine>
-              )}
               <InfoLine icon={Calendar} label="Reçu le">
                 {formatDateTime(prospect.createdAt)}
               </InfoLine>
@@ -276,6 +265,11 @@ export default async function ProspectDetailPage({
             prospectId={prospect.id}
             initialStatus={prospect.status}
             initialEstimatedValue={prospect.estimatedValue}
+          />
+          <ProspectActions
+            prospectId={prospect.id}
+            hasUser={Boolean(prospect.user)}
+            status={prospect.status}
           />
           <ProspectNotes
             prospectId={prospect.id}
