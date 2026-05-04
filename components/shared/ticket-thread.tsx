@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
+import { Dialog } from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -449,6 +450,9 @@ export function TicketThread({
   const [sending, setSending] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [editBusy, setEditBusy] = React.useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null);
+  const [deleteBusy, setDeleteBusy] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
   const [currentStatus, setCurrentStatus] = React.useState(status);
   const [currentPriority, setCurrentPriority] = React.useState(priority);
 
@@ -505,16 +509,21 @@ export function TicketThread({
     router.refresh();
   }
 
-  async function deleteMessage(messageId: string) {
-    if (!confirm("Supprimer ce message ?")) return;
+  async function confirmDelete() {
+    if (!confirmDeleteId) return;
+    setDeleteBusy(true);
+    setDeleteError(null);
     const res = await fetch(
-      `/api/tickets/${ticketId}/messages/${messageId}`,
+      `/api/tickets/${ticketId}/messages/${confirmDeleteId}`,
       { method: "DELETE" },
     );
-    if (res.ok) router.refresh();
-    else {
+    setDeleteBusy(false);
+    if (res.ok) {
+      setConfirmDeleteId(null);
+      router.refresh();
+    } else {
       const j = await res.json().catch(() => ({}));
-      alert(j.error || "Erreur");
+      setDeleteError(j.error || "Erreur lors de la suppression");
     }
   }
 
@@ -644,7 +653,10 @@ export function TicketThread({
                       </button>
                       <button
                         type="button"
-                        onClick={() => deleteMessage(m.id)}
+                        onClick={() => {
+                          setDeleteError(null);
+                          setConfirmDeleteId(m.id);
+                        }}
                         className="rounded p-1 hover:bg-muted hover:text-destructive"
                         title="Supprimer"
                       >
@@ -705,6 +717,57 @@ export function TicketThread({
           />
         </CardContent>
       </Card>
+
+      <Dialog
+        open={!!confirmDeleteId}
+        onClose={() => (deleteBusy ? null : setConfirmDeleteId(null))}
+        labelledBy="delete-message-title"
+        className="max-w-md"
+      >
+        <div className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400">
+              <Trash2 className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <h2
+                id="delete-message-title"
+                className="text-lg font-semibold"
+              >
+                Supprimer ce message ?
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Le message sera marqué comme supprimé et ne sera plus visible
+                dans la conversation. Cette action est irréversible.
+              </p>
+              {deleteError && (
+                <p className="mt-3 text-sm text-red-600 dark:text-red-400">{deleteError}</p>
+              )}
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setConfirmDeleteId(null)}
+              disabled={deleteBusy}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={deleteBusy}
+              className="bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/25 hover:-translate-y-0.5"
+            >
+              {deleteBusy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Supprimer
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }
